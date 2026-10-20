@@ -1,0 +1,19 @@
+id: exp-0004
+title: Champion + injury-history family
+stage: 2
+hypothesis: >-
+  Adding injury-history features (recency, 365/730-day and career counts and
+  days lost, recent return, prior injuries by body part) to the logistic
+  champion improves validation PR-AUC at both horizons.
+champion: exp-0001
+data_config: configs/data.yaml
+# One controlled change vs exp-0001: the feature set (v0 -> v0+history).
+features: v0+history
+labels: [y7, y28]
+seed: 20261020
+model:
+  kind: logistic
+  params:
+    C: 1.0
+    class_weight: balanced
+    max_iter: 2000
