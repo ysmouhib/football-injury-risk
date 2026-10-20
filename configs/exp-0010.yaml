@@ -1,0 +1,20 @@
+id: exp-0010
+title: Champion + decline-proxy family (seed repeat of exp-0009)
+stage: 2
+hypothesis: >-
+  Adding performance-decline proxies (log market value at t, its 12-month
+  change, change in starts share) to the champion improves validation PR-AUC
+  at both horizons.
+champion: exp-0004
+data_config: configs/data.yaml
+# One controlled change vs exp-0004: the feature set (v0+history -> v0+history+decline).
+features: v0+history+decline
+labels: [y7, y28]
+# exp-0009 was INCONCLUSIVE; the protocol allows one repeat with a different seed.
+seed: 20261021
+model:
+  kind: logistic
+  params:
+    C: 1.0
+    class_weight: balanced
+    max_iter: 2000
