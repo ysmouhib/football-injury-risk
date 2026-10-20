@@ -5,9 +5,15 @@ import pandas as pd
 
 from src import splits
 from src.labels import LABEL_SPECS, PRIMARY_LABELS, label_horizon
-from src.panel import CATEGORICAL_FEATURES_V0, FEATURES_V0, NUMERIC_FEATURES_V0
+from src.panel import FEATURE_SETS
 
 MAX_ABS_CORRELATION = 0.95
+
+
+def _feature_columns(panel):
+    numeric = [c for num, _ in FEATURE_SETS.values() for c in num if c in panel.columns]
+    categorical = [c for _, cat in FEATURE_SETS.values() for c in cat if c in panel.columns]
+    return list(dict.fromkeys(numeric)), list(dict.fromkeys(categorical))
 
 
 def test_feature_timestamps_precede_outcomes(panel):
@@ -25,9 +31,10 @@ def test_feature_timestamps_precede_outcomes(panel):
 
 
 def test_feature_list_excludes_outcome_columns():
-    for name in FEATURES_V0:
-        assert not name.startswith(("y", "onset")), name
-        assert name not in LABEL_SPECS
+    for numeric, categorical in FEATURE_SETS.values():
+        for name in numeric + categorical:
+            assert not name.startswith(("y", "onset")), name
+            assert name not in LABEL_SPECS
 
 
 def test_player_sets_disjoint(panel, cfg):
@@ -62,9 +69,21 @@ def test_labels_and_risk_set_match_bruteforce_recount(panel, cfg):
     events = events[events["player_id"].isin(sample["player_id"])]
     by_player = dict(tuple(events.groupby("player_id")))
     empty = events.iloc[:0]
+    has_history = "injuries_365d" in panel.columns
     for row in sample.itertuples():
         ev = by_player.get(row.player_id, empty)
         assert not ((ev["from_date"] <= row.t) & (ev["end_date"] > row.t)).any(), "absent player in risk set"
+        if has_history:
+            past = ev[ev["category"].isin(["injury", "unknown"]) & (ev["from_date"] <= row.t)]
+            recent = past[past["from_date"] > row.t - pd.Timedelta(days=365)]
+            assert row.injuries_365d == len(recent), (row.player_id, row.t)
+            assert row.days_lost_365d == recent["days_missed"].sum(), (row.player_id, row.t)
+            assert row.career_injuries == len(past), (row.player_id, row.t)
+            if len(past):
+                assert row.days_since_return == (row.t - past["end_date"].max()).days
+                assert row.feat_ts >= past["end_date"].max()
+            else:
+                assert row.no_prior_injury == 1
         for label, (horizon, min_days, kind) in LABEL_SPECS.items():
             window = ev[(ev["from_date"] > row.t) & (ev["from_date"] <= row.t + pd.Timedelta(days=horizon))]
             long_enough = window["days_missed"] >= min_days
@@ -110,10 +129,8 @@ def test_no_feature_has_impossible_label_correlation(panel, cfg):
     # development rows only: holdout-season and test-group rows are never inspected
     roles = splits.player_roles(panel["player_id"], cfg["splits"]["group_fractions"], cfg["seed"])
     dev = panel[(panel["season"] < cfg["splits"]["holdout_season"]) & roles.ne("test")]
-    X = pd.concat(
-        [dev[NUMERIC_FEATURES_V0].astype(float), pd.get_dummies(dev[CATEGORICAL_FEATURES_V0], dtype=float)],
-        axis=1,
-    )
+    numeric, categorical = _feature_columns(panel)
+    X = pd.concat([dev[numeric].astype(float), pd.get_dummies(dev[categorical], dtype=float)], axis=1)
     for label in LABEL_SPECS:
         y = dev[label]
         keep = y.notna().to_numpy()

@@ -163,3 +163,38 @@ def test_holdout_is_guarded(cfg):
         splits.origin_split(panel, cfg, cfg["splits"]["holdout_season"], "y7")
     with pytest.raises(PermissionError):
         splits.final_split(panel, cfg, "y7", 7)
+
+
+def test_history_windows_and_recency():
+    from src import history
+
+    t = pd.Timestamp("2022-03-06")  # a Sunday
+    ev = pd.DataFrame({
+        "player_id": [1, 1, 1, 1, 2],
+        "from_date": [t - pd.Timedelta(days=d) for d in (365, 364, 10, 800)] + [t - pd.Timedelta(days=50)],
+        "days_missed": [20, 5, 8, 30, 3],
+        "category": ["injury", "unknown", "injury", "injury", "illness"],
+        "body_part": ["hamstring", "n/a", "knee", "hamstring", "n/a"],
+        "tissue": ["muscle", "n/a", "ligament_joint", "muscle", "n/a"],
+    })
+    ev["end_date"] = ev["from_date"] + pd.to_timedelta(ev["days_missed"] - 1, unit="D")
+    panel = pd.DataFrame({"player_id": [1, 2], "t": [t, t]})
+    out = history.history_features(panel, ev).set_index(panel["player_id"])
+    assert out.loc[1, "injuries_365d"] == 2  # onset exactly 365 days ago is outside (t-365, t]
+    assert out.loc[1, "days_lost_365d"] == 13
+    assert out.loc[1, "injuries_730d"] == 3 and out.loc[1, "career_injuries"] == 4
+    assert out.loc[1, "hamstring_injuries_730d"] == 1 and out.loc[1, "muscle_injuries_730d"] == 1
+    assert out.loc[1, "days_since_return"] == 3 and out.loc[1, "returned_within_28d"] == 1
+    assert out.loc[1, "history_ts"] == t - pd.Timedelta(days=3)
+    # illness is not injury history
+    assert out.loc[2, "no_prior_injury"] == 1 and out.loc[2, "career_injuries"] == 0
+
+
+def test_history_refuses_unfinished_injuries():
+    from src import history
+
+    t = pd.Timestamp("2022-03-06")
+    ev = pd.DataFrame({"player_id": [1], "from_date": [t - pd.Timedelta(days=2)], "end_date": [t + pd.Timedelta(days=5)],
+                       "days_missed": [8], "category": ["injury"], "body_part": ["knee"], "tissue": ["unspecified"]})
+    with pytest.raises(ValueError):
+        history.history_features(pd.DataFrame({"player_id": [1], "t": [t]}), ev)

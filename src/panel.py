@@ -17,7 +17,7 @@ import logging
 
 import pandas as pd
 
-from . import datasets, exposure, labels, membership
+from . import datasets, exposure, history, labels, membership
 from .config import DATA_CONFIG, LABEL_MAPPING_CONFIG, load_data_config, load_yaml, stable_hash
 from .constants import PROCESSED_DIR, season_effective_end, season_window, week_end
 
@@ -34,7 +34,10 @@ NUMERIC_FEATURES_V0 = (
 CATEGORICAL_FEATURES_V0 = ["position_group", "foot"]
 FEATURES_V0 = NUMERIC_FEATURES_V0 + CATEGORICAL_FEATURES_V0
 # feature-set name used in experiment configs -> (numeric, categorical)
-FEATURE_SETS = {"v0": (NUMERIC_FEATURES_V0, CATEGORICAL_FEATURES_V0)}
+FEATURE_SETS = {
+    "v0": (NUMERIC_FEATURES_V0, CATEGORICAL_FEATURES_V0),
+    "v0+history": (NUMERIC_FEATURES_V0 + history.HISTORY_FEATURES, CATEGORICAL_FEATURES_V0),
+}
 
 
 def panel_sundays(cfg: dict) -> tuple[pd.Timestamp, pd.Timestamp]:
@@ -123,10 +126,19 @@ def build_panel(cfg: dict, mapping: dict) -> tuple[pd.DataFrame, dict]:
     # last two completed seasons.
     panel = panel[panel["prev1_no_record"].eq(0) | panel["prev2_no_record"].eq(0)]
 
+    families = cfg.get("feature_families") or []
+    if "history" in families:
+        log.info("history features")
+        hist = history.history_features(panel, events)
+        panel = pd.concat([panel, hist.drop(columns="history_ts")], axis=1)
+        panel["feat_ts"] = panel["feat_ts"].where(
+            hist["history_ts"].isna() | (hist["history_ts"] <= panel["feat_ts"]), hist["history_ts"])
+
     log.info("labels")
     panel = labels.attach_labels(panel, events, pd.Timestamp(cfg["labels"]["observed_until"]))
 
-    ordered = ID_COLUMNS + FEATURES_V0
+    feature_columns = [c for num, cat in FEATURE_SETS.values() for c in num + cat]
+    ordered = ID_COLUMNS + [c for c in dict.fromkeys(feature_columns) if c in panel.columns]
     rest = [c for c in panel.columns if c not in ordered]
     panel = panel[ordered + rest].sort_values(["player_id", "t"], ignore_index=True)
 
