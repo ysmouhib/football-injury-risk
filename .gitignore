@@ -10,3 +10,10 @@ LOCAL.md
 the design notes
 the evaluation protocol
 .local/
+PLAN.md
+EXPERIMENTS.md
+DATA_CARD.md
+MODEL_CARD.md
+FINAL_RUN.md
+reports/
+data/
