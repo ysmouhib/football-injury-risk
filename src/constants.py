@@ -58,3 +58,13 @@ def week_end(dates: pd.Series) -> pd.Series:
 
 def sunday_on_or_before(dates: pd.Series) -> pd.Series:
     return dates - pd.to_timedelta((dates.dt.weekday + 1) % 7, unit="D")
+
+
+def last_completed_season(t: pd.Series, overrides: dict[int, str]) -> pd.Series:
+    """Most recent season whose club competitions ended strictly before t."""
+    uniq = pd.Series(t.unique())
+    current = uniq.dt.year - (uniq.dt.month < 7).astype(int)
+    prev = current - 1
+    prev_end = prev.map(lambda y: season_effective_end(int(y), overrides))
+    done = prev.where(prev_end < uniq, prev - 1)
+    return t.map(dict(zip(uniq, done))).astype(int)

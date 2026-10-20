@@ -17,9 +17,15 @@ import logging
 
 import pandas as pd
 
-from . import datasets, exposure, history, labels, membership
+from . import datasets, exposure, history, labels, load, membership
 from .config import DATA_CONFIG, LABEL_MAPPING_CONFIG, load_data_config, load_yaml, stable_hash
-from .constants import PROCESSED_DIR, season_effective_end, season_window, week_end
+from .constants import (
+    PROCESSED_DIR,
+    last_completed_season,
+    season_effective_end,
+    season_window,
+    week_end,
+)
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 log = logging.getLogger(__name__)
@@ -37,6 +43,8 @@ FEATURES_V0 = NUMERIC_FEATURES_V0 + CATEGORICAL_FEATURES_V0
 FEATURE_SETS = {
     "v0": (NUMERIC_FEATURES_V0, CATEGORICAL_FEATURES_V0),
     "v0+history": (NUMERIC_FEATURES_V0 + history.HISTORY_FEATURES, CATEGORICAL_FEATURES_V0),
+    "v0+history+load": (NUMERIC_FEATURES_V0 + history.HISTORY_FEATURES + load.LOAD_FEATURES,
+                        CATEGORICAL_FEATURES_V0),
 }
 
 
@@ -46,16 +54,6 @@ def panel_sundays(cfg: dict) -> tuple[pd.Timestamp, pd.Timestamp]:
     first_t = week_end(pd.Series([first_day])).iloc[0]
     last_t = last_day - pd.Timedelta(days=(last_day.weekday() + 1) % 7)
     return first_t, last_t
-
-
-def last_completed_season(t: pd.Series, overrides: dict[int, str]) -> pd.Series:
-    """Most recent season whose club competitions ended strictly before t."""
-    uniq = pd.Series(t.unique())
-    current = uniq.dt.year - (uniq.dt.month < 7).astype(int)
-    prev = current - 1
-    prev_end = prev.map(lambda y: season_effective_end(int(y), overrides))
-    done = prev.where(prev_end < uniq, prev - 1)
-    return t.map(dict(zip(uniq, done))).astype(int)
 
 
 def demographics(profiles: pd.DataFrame, cfg: dict) -> pd.DataFrame:
@@ -90,6 +88,11 @@ def _add_exposure(panel: pd.DataFrame, season_exp: pd.DataFrame, overrides: dict
     return panel.drop(columns=drop + ["prev1_season"])
 
 
+def _latest(current: pd.Series, candidate: pd.Series) -> pd.Series:
+    """Element-wise max of two timestamp columns, ignoring missing candidates."""
+    return current.where(candidate.isna() | (candidate <= current), candidate)
+
+
 def build_panel(cfg: dict, mapping: dict) -> tuple[pd.DataFrame, dict]:
     first_t, last_t = panel_sundays(cfg)
     overrides = cfg["season_end_overrides"]
@@ -102,8 +105,8 @@ def build_panel(cfg: dict, mapping: dict) -> tuple[pd.DataFrame, dict]:
 
     log.info("absences")
     events = labels.prepare_events(datasets.load_injuries(), mapping)
-    absent = labels.absence_weeks(events, first_t, last_t).assign(_absent=True)
-    panel = panel.merge(absent, on=["player_id", "t"], how="left")
+    absences = labels.absence_weeks(events, first_t, last_t)
+    panel = panel.merge(absences.assign(_absent=True), on=["player_id", "t"], how="left")
     panel = panel[panel["_absent"].isna()].drop(columns="_absent")
     n_available = len(panel)
 
@@ -119,7 +122,8 @@ def build_panel(cfg: dict, mapping: dict) -> tuple[pd.DataFrame, dict]:
     log.info("exposure")
     perf = exposure.add_season(datasets.load_performances())
     coefs = exposure.fit_minutes_model(perf, cfg["exposure"]["minutes_model_last_season"])
-    panel = _add_exposure(panel, exposure.season_exposure(perf, coefs), overrides)
+    season_exp = exposure.season_exposure(perf, coefs)
+    panel = _add_exposure(panel, season_exp, overrides)
     n_age_ok = len(panel)
     # Registration spells without a recorded exit never close (retired or deceased
     # players stay "registered"); require a matchday-squad record in one of the
@@ -131,8 +135,12 @@ def build_panel(cfg: dict, mapping: dict) -> tuple[pd.DataFrame, dict]:
         log.info("history features")
         hist = history.history_features(panel, events)
         panel = pd.concat([panel, hist.drop(columns="history_ts")], axis=1)
-        panel["feat_ts"] = panel["feat_ts"].where(
-            hist["history_ts"].isna() | (hist["history_ts"] <= panel["feat_ts"]), hist["history_ts"])
+        panel["feat_ts"] = _latest(panel["feat_ts"], hist["history_ts"])
+    if "load" in families:
+        log.info("load-derivative features")
+        lf = load.load_features(panel, season_exp, absences, overrides)
+        panel = pd.concat([panel, lf.drop(columns="load_ts")], axis=1)
+        panel["feat_ts"] = _latest(panel["feat_ts"], lf["load_ts"])
 
     log.info("labels")
     panel = labels.attach_labels(panel, events, pd.Timestamp(cfg["labels"]["observed_until"]))

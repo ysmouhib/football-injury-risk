@@ -70,6 +70,7 @@ def test_labels_and_risk_set_match_bruteforce_recount(panel, cfg):
     by_player = dict(tuple(events.groupby("player_id")))
     empty = events.iloc[:0]
     has_history = "injuries_365d" in panel.columns
+    has_load = "weeks_absent_season" in panel.columns
     for row in sample.itertuples():
         ev = by_player.get(row.player_id, empty)
         assert not ((ev["from_date"] <= row.t) & (ev["end_date"] > row.t)).any(), "absent player in risk set"
@@ -84,6 +85,13 @@ def test_labels_and_risk_set_match_bruteforce_recount(panel, cfg):
                 assert row.feat_ts >= past["end_date"].max()
             else:
                 assert row.no_prior_injury == 1
+        if has_load:
+            season_start = pd.Timestamp(row.season, 7, 1)
+            sundays = pd.date_range(season_start, row.t - pd.Timedelta(days=1), freq="W-SUN")
+            absent = [s for s in sundays if ((ev["from_date"] <= s) & (ev["end_date"] > s)).any()]
+            assert row.weeks_absent_season == len(absent), (row.player_id, row.t)
+            if absent:
+                assert row.feat_ts >= absent[-1] + pd.Timedelta(days=1)
         for label, (horizon, min_days, kind) in LABEL_SPECS.items():
             window = ev[(ev["from_date"] > row.t) & (ev["from_date"] <= row.t + pd.Timedelta(days=horizon))]
             long_enough = window["days_missed"] >= min_days

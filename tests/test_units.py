@@ -198,3 +198,25 @@ def test_history_refuses_unfinished_injuries():
                        "days_missed": [8], "category": ["injury"], "body_part": ["knee"], "tissue": ["unspecified"]})
     with pytest.raises(ValueError):
         history.history_features(pd.DataFrame({"player_id": [1], "t": [t]}), ev)
+
+
+def test_load_features():
+    from src import load
+
+    t = pd.Timestamp("2021-10-03")  # season 2021; last completed season 2020 -> prev3 is 2018
+    panel = pd.DataFrame({"player_id": [1, 2], "t": [t, t], "season": [2021, 2021],
+                          "prev1_minutes_est": [2000.0, 0.0], "prev2_minutes_est": [1000.0, 0.0],
+                          "prev1_starts": [20.0, 0.0], "prev1_apps": [25.0, 0.0]})
+    season_exp = pd.DataFrame({"player_id": [1], "season": [2018], "minutes_est": [2000.0]})
+    absences = pd.DataFrame({"player_id": [1, 1, 1, 1],
+                             "t": pd.to_datetime(["2021-06-27", "2021-08-01", "2021-08-08", "2021-10-03"])})
+    out = load.load_features(panel, season_exp, absences, {}).set_index(panel["player_id"])
+    assert out.loc[1, "prev3_minutes_est"] == 2000
+    assert out.loc[1, "season_acwr_uncoupled"] == pytest.approx(2000 / 1500)
+    assert out.loc[1, "season_acwr_coupled"] == pytest.approx(2000 / (5000 / 3))
+    assert out.loc[1, "minutes_delta"] == 1000 and out.loc[1, "prev1_starts_share"] == 0.8
+    # previous-season absence and an absence on t itself are not counted
+    assert out.loc[1, "weeks_absent_season"] == 2
+    assert out.loc[1, "load_ts"] == pd.Timestamp("2021-08-09")
+    assert np.isnan(out.loc[2, "season_acwr_uncoupled"]) and np.isnan(out.loc[2, "prev1_starts_share"])
+    assert out.loc[2, "weeks_absent_season"] == 0 and pd.isna(out.loc[2, "load_ts"])
