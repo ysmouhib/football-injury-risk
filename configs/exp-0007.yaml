@@ -1,0 +1,20 @@
+id: exp-0007
+title: Champion + season-load derivative family (seed repeat of exp-0006)
+stage: 2
+hypothesis: >-
+  Adding season-level load derivatives (third-season minutes, coupled and
+  uncoupled season ACWR, season-over-season change, starts share, weeks absent
+  this season) to the champion improves validation PR-AUC at both horizons.
+champion: exp-0004
+data_config: configs/data.yaml
+# One controlled change vs exp-0004: the feature set (v0+history -> v0+history+load).
+features: v0+history+load
+labels: [y7, y28]
+# exp-0006 was INCONCLUSIVE; the protocol allows one repeat with a different seed.
+seed: 20261021
+model:
+  kind: logistic
+  params:
+    C: 1.0
+    class_weight: balanced
+    max_iter: 2000
