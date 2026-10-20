@@ -49,10 +49,13 @@ def train(config_path: Path) -> None:
         raise SystemExit("feature store content does not match its recorded hash")
 
     numeric, categorical = exp["numeric"], exp["categorical"]
+    # optional data-scope change: train on a later-starting window (never earlier than the panel)
+    train_first = exp.get("train_first_season", data_cfg["seasons"]["first"])
     predictions, split_info = [], []
     for label in exp["labels"]:
         for split in splits.rolling_origins(panel, data_cfg, label):
             tr, ev = panel.iloc[split.train_idx], panel.iloc[split.eval_idx]
+            tr = tr[tr["season"] >= train_first]
             categories = fit_categories(tr, categorical)
             model = build_model(exp["model"], numeric, categorical, exp["seed"])
             start = time.perf_counter()
@@ -63,7 +66,7 @@ def train(config_path: Path) -> None:
                                                        y=ev[label].astype(int).to_numpy(), p=p))
             split_info.append({
                 "split": split.name, "label": label, "origin": split.eval_season,
-                "train_cutoff_t": str(split.train_cutoff_t.date()),
+                "train_cutoff_t": str(split.train_cutoff_t.date()), "train_first_season": int(train_first),
                 "first_eval_t": str(split.first_eval_t.date()),
                 "train_rows": len(tr), "train_players": int(tr["player_id"].nunique()),
                 "train_positives": int(tr[label].sum()),

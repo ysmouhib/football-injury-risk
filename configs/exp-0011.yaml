@@ -1,0 +1,20 @@
+id: exp-0011
+title: Champion trained from 2016/17 (data-scope loop)
+stage: 2
+hypothesis: >-
+  Training the champion only on seasons from 2016/17, after injury reporting
+  stabilised, improves validation PR-AUC at both horizons compared with
+  training from 2014/15.
+champion: exp-0004
+data_config: configs/data.yaml
+features: v0+history
+# One controlled change vs exp-0004: training window starts 2016/17 instead of 2014/15.
+train_first_season: 2016
+labels: [y7, y28]
+seed: 20261020
+model:
+  kind: logistic
+  params:
+    C: 1.0
+    class_weight: balanced
+    max_iter: 2000
