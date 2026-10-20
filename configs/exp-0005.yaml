@@ -1,0 +1,28 @@
+id: exp-0005
+title: LightGBM on v0+history (model-family re-challenge)
+stage: 2
+hypothesis: >-
+  With injury-history features available, a class-weighted LightGBM (same
+  fixed settings as exp-0002) improves validation PR-AUC over the logistic
+  champion at both horizons by modelling non-linear history effects and
+  their interactions with age and exposure.
+champion: exp-0004
+data_config: configs/data.yaml
+features: v0+history
+labels: [y7, y28]
+seed: 20261020
+# One controlled change vs exp-0004: the model block (identical to exp-0002).
+model:
+  kind: lightgbm
+  params:
+    objective: binary
+    class_weight: balanced
+    n_estimators: 400
+    learning_rate: 0.03
+    num_leaves: 31
+    min_child_samples: 200
+    subsample: 0.8
+    subsample_freq: 1
+    colsample_bytree: 0.8
+    reg_lambda: 1.0
+    n_jobs: 4
