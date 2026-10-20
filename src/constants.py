@@ -37,3 +37,24 @@ def season_window(start_year: int) -> tuple[pd.Timestamp, pd.Timestamp]:
 def season_start_year_of_date(ts: pd.Timestamp) -> int:
     """Start year of the season containing a calendar date."""
     return ts.year if ts.month >= SEASON_START_MONTH else ts.year - 1
+
+
+def season_start_years(dates: pd.Series) -> pd.Series:
+    """Vectorised season_start_year_of_date."""
+    return dates.dt.year - (dates.dt.month < SEASON_START_MONTH).astype(int)
+
+
+def season_effective_end(start_year: int, overrides: dict | None = None) -> pd.Timestamp:
+    """Last day of a season's club competitions: Jun 30 of Y+1 unless overridden."""
+    if overrides and start_year in overrides:
+        return pd.Timestamp(overrides[start_year])
+    return season_window(start_year)[1]
+
+
+def week_end(dates: pd.Series) -> pd.Series:
+    """Sunday closing the Monday-Sunday week of each date."""
+    return dates + pd.to_timedelta(6 - dates.dt.weekday, unit="D")
+
+
+def sunday_on_or_before(dates: pd.Series) -> pd.Series:
+    return dates - pd.to_timedelta((dates.dt.weekday + 1) % 7, unit="D")

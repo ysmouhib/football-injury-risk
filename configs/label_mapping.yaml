@@ -1,0 +1,55 @@
+# Mapping of raw Transfermarkt injury_reason strings to label categories.
+# Patterns are case-insensitive regular expressions searched in the raw string;
+# within each list the first matching rule wins. Body part and tissue apply to
+# category "injury" only.
+version: label_map_v1
+
+categories:
+  # Absence type is not disclosed: cannot be counted as an injury or a non-injury.
+  - category: unknown
+    pattern: '^(unknown injury|surgery)$'
+  - category: illness
+    pattern: >-
+      ^ill$|\bflu\b|influenza|^cold$|corona|quarantine|fever|infection|virus|stomach problems|
+      tonsillitis|heart|angina|pneumonia|mononucleation|appendic|appendectomy|malaria|allerg|
+      food poisoning|bronchitis|kidney|cancer|tumou?r|depression|circulation|meningitis|tooth|
+      dental|chickenpox|abscess|blood poisoning|blood clots|shingles|skin disease|tuberculosis|
+      stroke|splenic infarction|\bcoma\b|liver|varicose|vein occlusion|pancreas|intestinal surgery|
+      nerval disease|balance disorder|cerebral hemorrhage|umbilical|leg skin|cyst in the lungs
+  - category: non_injury
+    pattern: '^(rest|fitness)$|remove screws'
+  # Trauma outside football activity.
+  - category: non_sport
+    pattern: 'traffic accident|gunshot|insect bite|combustion'
+default_category: injury
+
+body_parts:
+  - {body_part: hamstring, pattern: 'hamstring|biceps tendon in the thigh'}
+  - {body_part: groin_hip, pattern: 'adductor|groin|pubalgia|pubic|inguinal|\bhip\b|pelvi|femoral neck'}
+  - {body_part: thigh, pattern: 'thigh|quadri|dead leg|femoral|femur'}
+  # "Outer ligament" (Außenband) without a body part refers to the ankle in Transfermarkt usage.
+  - {body_part: ankle, pattern: 'ankle|syndesm|tarsus|outer ligament'}
+  # "Inner/internal/collateral ligament" without a body part refers to the knee (MCL/LCL).
+  - {body_part: knee, pattern: 'knee|cruciate|menisc|patell|arthroscopy|collateral ligament|inner ligament|internal ligament|tibial head|head of the fibula'}
+  - {body_part: lower_leg, pattern: 'calf|achilles|\bshin|tibia|fibula|lower leg|broken leg|compartment syndrome|peroneus'}
+  - {body_part: foot, pattern: 'foot|metatars|\btoe|heel|plantar|arch problems|\bcorn\b'}
+  - {body_part: upper_limb, pattern: 'shoulder|\barm\b|elbow|wrist|hand|finger|thumb|collarbone|scaphoid|metacarp|forearm|humer|acromioclavicular'}
+  - {body_part: head_neck, pattern: 'head|concussion|nose|jaw|cheek|facial|\beye|skull|neck|cervical|whiplash|\bear\b|eardrum|auditory|hearing|frontal|petrous'}
+  - {body_part: trunk, pattern: 'back|lumb|vertebra|spine|\bdisc\b|sciatica|\bribs?\b|chest|abdom|lung|pneumothorax|splenic|testic|coccyx|pinched nerve|nerve roots'}
+  - {body_part: lower_limb_other, pattern: '\bleg\b'}
+default_body_part: unspecified
+
+tissues:
+  - {tissue: concussion, pattern: 'concussion'}
+  - {tissue: contusion, pattern: 'knock|bruise|contusion|dead leg'}
+  - {tissue: bone, pattern: 'fracture|broken|crack|fissure|splinter|\bbone|stress reaction'}
+  - {tissue: tendon, pattern: 'tendon|tendin|achilles|bursitis|peroneus|plantar fascia'}
+  - {tissue: ligament_joint, pattern: 'ligament|cruciate|menisc|sprain|syndesm|capsul|cartilage|dislocation|arthroscopy|contortion|joint|kneecap|impingement'}
+  # Procedures and hernias are not muscle injuries even when a muscle group is named.
+  - {tissue: other, pattern: 'surgery|hernia'}
+  - {tissue: muscle, pattern: 'muscle|muscular|hamstring|strain|fib(er|re)|adductor|groin|calf|thigh|contracture|overstretch|stiffness|hip flexor'}
+  - {tissue: other, pattern: 'wound|laceration|\bcut\b|inflammation|nerve|sciatica|lumbago|cyst|whiplash|blockage|edema|swelling'}
+default_tissue: unspecified
+
+# Tissue types counted as soft-tissue injuries (sensitivity label).
+soft_tissue: [muscle, tendon]

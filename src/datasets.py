@@ -77,6 +77,7 @@ def load_profiles(base_dir: Path | None = None) -> pd.DataFrame:
             "foot": "str",
         },
         parse_dates=["date_of_birth"],
+        low_memory=False,
     )
     return df
 

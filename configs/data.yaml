@@ -1,0 +1,39 @@
+# Data scope and player-week panel construction (feature store v0).
+# Every value here is justified by the Stage 0 audit; changing one changes the data hash.
+version: panel_v0
+seed: 20261020
+
+competitions: [GB1, ES1, IT1, FR1, L1]
+
+seasons:
+  first: 2014   # start year of the first panel season (2014/15); earlier seasons are label-incomplete
+  last: 2024    # start year of the last panel season (2024/25); later inputs were scraped mid-season
+
+# Effective end date of a season's club competitions when it differs from Jun 30.
+# 2019/20 resumed after the COVID suspension; UEFA competitions finished 2020-08-23.
+season_end_overrides:
+  2019: "2020-08-23"
+
+labels:
+  horizons_days: [7, 28]
+  min_days_missed: 7
+  sensitivity_min_days_missed: 3
+  # Injury table snapshot end (max from_date); windows past this date are not observable.
+  observed_until: "2026-09-28"
+
+exposure:
+  lags: 2                     # completed seasons used as features (most recent first)
+  minutes_model_last_season: 2013  # fit the minutes estimator on seasons up to 2013/14 only
+
+panel:
+  min_age: 15
+  max_age: 45
+  min_height_cm: 150
+  max_height_cm: 215
+
+splits:
+  group_fractions: {train: 0.6, validation: 0.2, test: 0.2}
+  validation_seasons: [2021, 2022, 2023]
+  main_validation_season: 2023
+  holdout_season: 2024
+  embargo_days: 7
