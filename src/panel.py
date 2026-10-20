@@ -17,7 +17,7 @@ import logging
 
 import pandas as pd
 
-from . import datasets, exposure, history, labels, load, membership
+from . import context, datasets, exposure, history, labels, load, membership
 from .config import DATA_CONFIG, LABEL_MAPPING_CONFIG, load_data_config, load_yaml, stable_hash
 from .constants import (
     PROCESSED_DIR,
@@ -45,6 +45,8 @@ FEATURE_SETS = {
     "v0+history": (NUMERIC_FEATURES_V0 + history.HISTORY_FEATURES, CATEGORICAL_FEATURES_V0),
     "v0+history+load": (NUMERIC_FEATURES_V0 + history.HISTORY_FEATURES + load.LOAD_FEATURES,
                         CATEGORICAL_FEATURES_V0),
+    "v0+history+context": (NUMERIC_FEATURES_V0 + history.HISTORY_FEATURES + context.CONTEXT_NUMERIC,
+                           CATEGORICAL_FEATURES_V0 + context.CONTEXT_CATEGORICAL),
 }
 
 
@@ -141,6 +143,11 @@ def build_panel(cfg: dict, mapping: dict) -> tuple[pd.DataFrame, dict]:
         lf = load.load_features(panel, season_exp, absences, overrides)
         panel = pd.concat([panel, lf.drop(columns="load_ts")], axis=1)
         panel["feat_ts"] = _latest(panel["feat_ts"], lf["load_ts"])
+    if "context" in families:
+        log.info("context features")
+        euro = perf[perf["competition_id"].isin(context.UEFA_CLUB_COMPETITIONS)]
+        euro_exp = exposure.season_exposure(euro, coefs)
+        panel = pd.concat([panel, context.context_features(panel, euro_exp, overrides)], axis=1)
 
     log.info("labels")
     panel = labels.attach_labels(panel, events, pd.Timestamp(cfg["labels"]["observed_until"]))

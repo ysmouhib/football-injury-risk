@@ -220,3 +220,16 @@ def test_load_features():
     assert out.loc[1, "load_ts"] == pd.Timestamp("2021-08-09")
     assert np.isnan(out.loc[2, "season_acwr_uncoupled"]) and np.isnan(out.loc[2, "prev1_starts_share"])
     assert out.loc[2, "weeks_absent_season"] == 0 and pd.isna(out.loc[2, "load_ts"])
+
+
+def test_context_features():
+    from src import context
+
+    panel = pd.DataFrame({"player_id": [1, 2], "t": pd.to_datetime(["2021-07-04", "2022-03-06"]),
+                          "season": [2021, 2021], "competition_id": ["GB1", "L1"]})
+    euro = pd.DataFrame({"player_id": [1, 2], "season": [2020, 2019], "minutes_est": [900.0, 500.0]})
+    out = context.context_features(panel, euro, {}).set_index(panel["player_id"])
+    assert out.loc[1, "weeks_into_season"] == 0 and out.loc[2, "weeks_into_season"] == 35
+    assert out.loc[1, "season_month"] == "m07" and out.loc[2, "league"] == "L1"
+    assert out.loc[1, "prev1_euro_minutes"] == 900  # last completed season 2020
+    assert out.loc[2, "prev1_euro_minutes"] == 0    # 2019 is two seasons back
