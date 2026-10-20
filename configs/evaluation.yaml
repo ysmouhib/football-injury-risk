@@ -5,7 +5,7 @@ main_origin: 2023
 # "main" (main origin only) or "mean_origins" (mean of per-origin values).
 # Set by the pre-specified power rule (PLAN.md open decision 11) after the
 # baseline's bootstrap; challengers cannot be judged while this is null.
-aggregation: null
+aggregation: main  # decided by the pre-specified power rule on the exp-0001 baseline
 n_resamples: 1000
 ci_level: 0.95
 max_slope_regression: 0.05
