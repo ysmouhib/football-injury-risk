@@ -90,10 +90,10 @@ def _label_dossier(rows: pd.DataFrame, ev_cfg: dict, seed: int, out_dir: Path, l
 
 
 def _compare(preds: pd.DataFrame, champ: pd.DataFrame, own: dict, champ_metrics: dict,
-             ev_cfg: dict, seed: int) -> dict:
+             ev_cfg: dict, seed: int, boot_path: Path) -> dict:
     how, main = ev_cfg["aggregation"], ev_cfg["main_origin"]
     keys = ["label", "origin", "player_id", "t"]
-    result = {}
+    result, deltas = {}, {}
     for label in ev_cfg["decision_labels"]:
         a = preds[preds["label"] == label]
         b = champ[champ["label"] == label]
@@ -105,6 +105,7 @@ def _compare(preds: pd.DataFrame, champ: pd.DataFrame, own: dict, champ_metrics:
         boot = metrics.bootstrap_pr_auc(origins, ev_cfg["n_resamples"], seed)
         delta_dist = (_aggregate_boot(boot["challenger"], order, how, main)
                       - _aggregate_boot(boot["champion"], order, how, main))
+        deltas[label] = delta_dist
         mine, theirs = own[label]["aggregate"][how], champ_metrics["labels"][label]["aggregate"][how]
         delta = mine["pr_auc"] - theirs["pr_auc"]
         ci = metrics.percentile_ci(delta_dist, ev_cfg["ci_level"])
@@ -118,6 +119,8 @@ def _compare(preds: pd.DataFrame, champ: pd.DataFrame, own: dict, champ_metrics:
             "cond2_ci_excludes_zero": ci[0] > 0,
             "cond3_no_slope_regression": regression <= ev_cfg["max_slope_regression"],
         }
+    # kept so a deterministic seed repeat can be decided on the pooled draws
+    np.savez(boot_path, **deltas)
     conds = pd.DataFrame(result).T
     if conds[["cond1_delta_positive", "cond2_ci_excludes_zero", "cond3_no_slope_regression"]].all().all():
         verdict = "PROMOTE"
@@ -208,7 +211,8 @@ def evaluate(config_path: Path) -> dict:
         champ_id = exp["champion"]
         champ_metrics = json.loads((run_dir(champ_id) / "metrics.json").read_text(encoding="utf-8"))
         result["comparison"] = _compare(preds, load_predictions(champ_id), result["labels"],
-                                        champ_metrics, ev_cfg, exp["seed"])
+                                        champ_metrics, ev_cfg, exp["seed"],
+                                        run_dir(exp["id"]) / "delta_bootstrap.npz")
     else:
         power = {}
         for label in ev_cfg["decision_labels"]:
