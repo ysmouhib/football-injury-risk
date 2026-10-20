@@ -1,0 +1,12 @@
+.venv/
+football-datasets/
+pmsys/
+ML-Sports-Injury-Prediction/
+__pycache__/
+
+# local helper files
+LOCAL.md
+LOCAL.md
+the design notes
+the evaluation protocol
+.local/
