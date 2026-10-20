@@ -3,13 +3,11 @@ football-datasets/
 pmsys/
 ML-Sports-Injury-Prediction/
 __pycache__/
+.pytest_cache/
 
-# local helper files
-LOCAL.md
-LOCAL.md
+# local working documents and generated outputs
 the design notes
 the evaluation protocol
-.local/
 PLAN.md
 EXPERIMENTS.md
 DATA_CARD.md
@@ -17,3 +15,4 @@ MODEL_CARD.md
 FINAL_RUN.md
 reports/
 data/
+Makefile
