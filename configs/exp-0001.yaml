@@ -1,0 +1,17 @@
+id: exp-0001
+title: Class-weighted logistic regression, v0 features
+stage: 1
+hypothesis: >-
+  A class-weighted logistic regression on exposure and demographic features
+  ranks next-7/28-day time-loss injuries above the prevalence baseline.
+champion: null  # first champion of record
+data_config: configs/data.yaml
+features: v0
+labels: [y7, y28]
+seed: 20261020
+model:
+  kind: logistic
+  params:
+    C: 1.0
+    class_weight: balanced
+    max_iter: 2000

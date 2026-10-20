@@ -33,6 +33,8 @@ NUMERIC_FEATURES_V0 = (
 )
 CATEGORICAL_FEATURES_V0 = ["position_group", "foot"]
 FEATURES_V0 = NUMERIC_FEATURES_V0 + CATEGORICAL_FEATURES_V0
+# feature-set name used in experiment configs -> (numeric, categorical)
+FEATURE_SETS = {"v0": (NUMERIC_FEATURES_V0, CATEGORICAL_FEATURES_V0)}
 
 
 def panel_sundays(cfg: dict) -> tuple[pd.Timestamp, pd.Timestamp]:

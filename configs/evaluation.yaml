@@ -1,0 +1,11 @@
+# Promotion-rule settings (the evaluation protocol section 3 and 3a).
+primary_metric: pr_auc
+decision_labels: [y7, y28]
+main_origin: 2023
+# "main" (main origin only) or "mean_origins" (mean of per-origin values).
+# Set by the pre-specified power rule (PLAN.md open decision 11) after the
+# baseline's bootstrap; challengers cannot be judged while this is null.
+aggregation: null
+n_resamples: 1000
+ci_level: 0.95
+max_slope_regression: 0.05
