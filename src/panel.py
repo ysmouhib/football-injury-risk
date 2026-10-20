@@ -17,7 +17,7 @@ import logging
 
 import pandas as pd
 
-from . import context, datasets, exposure, history, labels, load, membership
+from . import context, datasets, decline, exposure, history, labels, load, membership
 from .config import DATA_CONFIG, LABEL_MAPPING_CONFIG, load_data_config, load_yaml, stable_hash
 from .constants import (
     PROCESSED_DIR,
@@ -47,6 +47,8 @@ FEATURE_SETS = {
                         CATEGORICAL_FEATURES_V0),
     "v0+history+context": (NUMERIC_FEATURES_V0 + history.HISTORY_FEATURES + context.CONTEXT_NUMERIC,
                            CATEGORICAL_FEATURES_V0 + context.CONTEXT_CATEGORICAL),
+    "v0+history+decline": (NUMERIC_FEATURES_V0 + history.HISTORY_FEATURES + decline.DECLINE_FEATURES,
+                           CATEGORICAL_FEATURES_V0),
 }
 
 
@@ -148,6 +150,11 @@ def build_panel(cfg: dict, mapping: dict) -> tuple[pd.DataFrame, dict]:
         euro = perf[perf["competition_id"].isin(context.UEFA_CLUB_COMPETITIONS)]
         euro_exp = exposure.season_exposure(euro, coefs)
         panel = pd.concat([panel, context.context_features(panel, euro_exp, overrides)], axis=1)
+    if "decline" in families:
+        log.info("decline features")
+        df = decline.decline_features(panel, datasets.load_market_values(), season_exp, overrides)
+        panel = pd.concat([panel, df.drop(columns="decline_ts")], axis=1)
+        panel["feat_ts"] = _latest(panel["feat_ts"], df["decline_ts"])
 
     log.info("labels")
     panel = labels.attach_labels(panel, events, pd.Timestamp(cfg["labels"]["observed_until"]))

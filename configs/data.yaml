@@ -1,11 +1,11 @@
 # Data scope and player-week panel construction (feature store).
 # Every value here is justified by the Stage 0 audit; changing one changes the data hash.
-version: panel_v3
+version: panel_v4
 seed: 20261020
 
 # Feature families added on top of v0 (PLAN.md amendment A8). Adding a family only
 # adds columns: rows and labels are unchanged.
-feature_families: [history, load, context]
+feature_families: [history, load, context, decline]
 
 competitions: [GB1, ES1, IT1, FR1, L1]
 

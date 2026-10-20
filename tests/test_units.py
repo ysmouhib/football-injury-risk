@@ -233,3 +233,22 @@ def test_context_features():
     assert out.loc[1, "season_month"] == "m07" and out.loc[2, "league"] == "L1"
     assert out.loc[1, "prev1_euro_minutes"] == 900  # last completed season 2020
     assert out.loc[2, "prev1_euro_minutes"] == 0    # 2019 is two seasons back
+
+
+def test_decline_features():
+    from src import decline
+
+    t = pd.Timestamp("2022-03-06")
+    panel = pd.DataFrame({"player_id": [1, 2], "t": [t, t], "prev1_starts": [10.0, 5.0], "prev1_apps": [20.0, 0.0]})
+    mv = pd.DataFrame({"player_id": [1, 1, 1, 2],
+                       "date": pd.to_datetime(["2021-01-10", "2021-12-01", "2022-03-07", "2021-06-01"]),
+                       "value": [1e6, 4e6, 9e9, 0.0]})
+    season_exp = pd.DataFrame({"player_id": [1], "season": [2019], "starts": [15.0], "apps": [20.0]})
+    out = decline.decline_features(panel, mv, season_exp, {}).set_index(panel["player_id"])
+    # the valuation dated after t is ignored; the one a year earlier is 2021-01-10
+    assert out.loc[1, "log_market_value"] == pytest.approx(np.log(4e6))
+    assert out.loc[1, "mv_change_12m"] == pytest.approx(np.log(4))
+    assert out.loc[1, "decline_ts"] == pd.Timestamp("2021-12-01")
+    assert out.loc[1, "starts_share_delta"] == pytest.approx(0.5 - 0.75)
+    # zero valuations are placeholders
+    assert np.isnan(out.loc[2, "log_market_value"]) and np.isnan(out.loc[2, "starts_share_delta"])
