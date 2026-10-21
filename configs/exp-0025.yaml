@@ -1,0 +1,24 @@
+id: exp-0025
+title: Subgroup calibration of the frozen champion on the holdout
+stage: 7
+analysis: subgroups
+question: >-
+  How well does the frozen champion discriminate and how well is it calibrated within position
+  groups, age bands at season start and usage bands on the 2024/25 holdout, and does the 28-day
+  Mondrian conformal coverage hold within each subgroup?
+# Frozen champion (PLAN decision 19); analysis only, no model-selection decision.
+# Definitions: PLAN decisions 20(a) (usage band) and 22.
+champion: exp-0018
+data_config: configs/data.yaml
+populations: [in_season, all_weeks]   # first = primary; all weeks: n, prevalence, PR-AUC only
+labels: [y7, y28]
+dimensions: [position, age_band, usage_band]
+order:
+  position: [GK, DEF, MID, FWD]
+  age_band: ["≤23", "24–28", "≥29"]
+  usage_band: [bottom half, top half]
+min_cell_player_weeks: 500
+coverage: {label: y28, alpha: 0.10}
+figure: subgroups
+seed: 20261020
+n_resamples: 1000

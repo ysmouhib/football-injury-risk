@@ -33,7 +33,6 @@ from .train import _calibrate, leakage_tests_pass
 
 log = logging.getLogger(__name__)
 
-MIN_CELL = 500
 POSITIONS = {"Goalkeeper": "GK", "Defender": "DEF", "Midfield": "MID", "Attack": "FWD"}
 AGE_BANDS = ["≤23", "24–28", "≥29"]
 
@@ -288,11 +287,11 @@ def _subgroups(rows: pd.DataFrame, usage_cut: float) -> pd.DataFrame:
     return out
 
 
-def _cell(g: pd.DataFrame, n: int, seed: int, full: bool, q: tuple | None) -> dict:
+def _cell(g: pd.DataFrame, n: int, seed: int, full: bool, q: tuple | None, min_cell: int) -> dict:
     y, p, pid = g["y"].to_numpy(), g["p"].to_numpy(), g["player_id"].to_numpy()
     cell = {"n": len(g), "players": int(g["player_id"].nunique()), "positives": int(y.sum()),
             "prevalence": float(y.mean()) if len(g) else None}
-    if len(g) < MIN_CELL or y.sum() == 0 or y.sum() == len(y):
+    if len(g) < min_cell or y.sum() == 0 or y.sum() == len(y):
         return {**cell, "status": "insufficient"}
     pr, pr_ci = pr_auc_ci(y, p, pid, n, seed)
     cell.update(status="ok", pr_auc=pr, pr_auc_ci=pr_ci)
@@ -322,7 +321,7 @@ def subgroups(cfg: dict, path) -> dict:
     keys = pd.concat([d[KEYS + ["prev1_minutes_est"]] for d in data.values()]).drop_duplicates(KEYS)
     primary = cfg["populations"][0]
     usage_cut = float(keys.loc[keys["t"].dt.month.isin(months[primary]), "prev1_minutes_est"].median())
-    result = {**_provenance(cfg, path), "usage_cut_minutes": usage_cut, "conformal": {"alpha": alpha, "q0": q[0],
+    result = {**_provenance(cfg, path), "min_cell": cfg["min_cell_player_weeks"], "usage_cut_minutes": usage_cut, "conformal": {"alpha": alpha, "q0": q[0],
               "q1": q[1], "label": cfg["coverage"]["label"]}, "unknown": {}, "cells": []}
     for label, rows in data.items():
         groups = _subgroups(rows, usage_cut)
@@ -330,7 +329,7 @@ def subgroups(cfg: dict, path) -> dict:
             in_pop = rows["t"].dt.month.isin(months[pop])
             if pop == primary and label == cfg["coverage"]["label"]:
                 # the quantiles reproduce the final run's overall coverage on this population
-                allq = _cell(rows[in_pop], 1, seed, True, q)["coverage"]
+                allq = _cell(rows[in_pop], 1, seed, True, q, 0)["coverage"]
                 ref = next(c for c in final["labels"][label][pop]["conformal"] if c["alpha"] == alpha)["coverage"]
                 if allq != ref:
                     raise SystemExit(f"conformal quantiles do not reproduce the final run ({allq} vs {ref})")
@@ -343,7 +342,7 @@ def subgroups(cfg: dict, path) -> dict:
                     full = pop == primary
                     cq = q if full and label == cfg["coverage"]["label"] else None
                     result["cells"].append({"label": label, "population": pop, "dimension": dim, "group": value,
-                                            **_cell(g, n, seed, full, cq)})
+                                            **_cell(g, n, seed, full, cq, cfg["min_cell_player_weeks"])})
     result["final_run_strata_check"] = {
         "champion": spec["champion"],
         "note": "point estimates of position/league strata also appear in the final-run entry"}
@@ -353,7 +352,7 @@ def subgroups(cfg: dict, path) -> dict:
 def _subgroup_report(r: dict, title: str) -> str:
     lines = [f"# {r['id']} — {title}", "",
              f"Holdout 2024/25, frozen champion; 95% player-cluster bootstrap CIs within each subgroup; cells < "
-             f"{MIN_CELL} player-weeks or without injuries: insufficient. Usage band cut (decision 20a): "
+             f"{r['min_cell']} player-weeks or without injuries: insufficient. Usage band cut (decision 20a): "
              f"{r['usage_cut_minutes']:.0f} estimated minutes last season. Mondrian conformal α = "
              f"{r['conformal']['alpha']} ({r['conformal']['label']}), final-run quantiles.", "",
              "Unknown (dropped) player-weeks: " + ", ".join(f"{k} {v}" for k, v in r["unknown"].items()), ""]
