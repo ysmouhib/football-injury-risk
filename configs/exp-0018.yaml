@@ -1,0 +1,23 @@
+id: exp-0018
+title: Calibrated champion + context family (re-test of exp-0008)
+stage: 4
+hypothesis: >-
+  Adding the context family (league, season month, weeks into the season,
+  European club minutes last season; definitions unchanged from exp-0008) to
+  the Platt-calibrated champion improves validation PR-AUC at both horizons.
+champion: exp-0016
+data_config: configs/data.yaml
+features: v0+history+context
+labels: [y7, y28]
+seed: 20261020
+# Pre-scheduled re-test (PLAN 4.4): one controlled change vs exp-0016, the feature set
+# (v0+history -> v0+history+context). Standard rule: PR-AUC at both horizons, veto v2 on the
+# calibrated slope; the calibrator is refitted on the challenger's own inner model.
+calibration:
+  method: platt
+model:
+  kind: logistic
+  params:
+    C: 1.0
+    class_weight: balanced
+    max_iter: 2000
