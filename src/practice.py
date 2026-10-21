@@ -86,7 +86,7 @@ def _write(cfg: dict, result: dict, report: str) -> None:
     (out / "analysis.json").write_text(json.dumps(result, indent=2, default=lambda v: v.item()), encoding="utf-8")
     EXPERIMENTS_REPORTS_DIR.mkdir(parents=True, exist_ok=True)
     (EXPERIMENTS_REPORTS_DIR / f"{cfg['id']}.md").write_text(report, encoding="utf-8")
-    print(report)
+    log.info("wrote %s and %s", out / "analysis.json", EXPERIMENTS_REPORTS_DIR / f"{cfg['id']}.md")
 
 
 def _provenance(cfg: dict, path) -> dict:
