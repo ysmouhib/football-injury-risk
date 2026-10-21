@@ -119,22 +119,24 @@ class CalibrationSplit:
     calib_b_idx: np.ndarray
 
 
-def calibration_split(panel: pd.DataFrame, cfg: dict, val_season: int, label: str) -> CalibrationSplit:
-    """Rows for post-hoc calibration at a validation origin, all from the train player group.
+def calibration_split(panel: pd.DataFrame, cfg: dict, val_season: int, label: str,
+                      train_roles: tuple[str, ...] = ("train",), allow_holdout: bool = False) -> CalibrationSplit:
+    """Rows for post-hoc calibration at an evaluation origin, all from the training player group(s).
 
     inner: seasons <= val_season - 2 with outcome windows closing >= embargo before season
     val_season - 1; calibration: season val_season - 1 with outcome windows closing >= embargo
     before val_season (the training cutoff), split by player into halves A and B.
     """
     s = cfg["splits"]
-    if val_season >= s["holdout_season"]:
+    if val_season >= s["holdout_season"] and not allow_holdout:
         raise ValueError(f"season {val_season} is not a validation season (holdout is one-shot)")
     horizon = label_horizon(label)
     gap = pd.Timedelta(days=horizon + s["embargo_days"])
     calibration_season = val_season - 1
     inner_cutoff = first_sunday_of_season(calibration_season) - gap
     calibration_cutoff = first_sunday_of_season(val_season) - gap
-    train = player_roles(panel["player_id"], s["group_fractions"], cfg["seed"]).eq("train") & panel[label].notna()
+    roles = player_roles(panel["player_id"], s["group_fractions"], cfg["seed"])
+    train = roles.isin(train_roles) & panel[label].notna()
     inner = train & (panel["season"] >= cfg["seasons"]["first"]) & (panel["t"] <= inner_cutoff)
     calib = train & panel["season"].eq(calibration_season) & (panel["t"] <= calibration_cutoff)
     halves = calibration_halves(panel["player_id"], cfg["seed"])

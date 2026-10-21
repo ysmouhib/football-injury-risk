@@ -1,0 +1,21 @@
+# Stage 6: the one-shot evaluation of the pre-registered champion on the final holdout.
+# Executed by `python -m src.final_run --expected-commit <sha>` exactly once.
+champion: exp-0018          # LR, v0+history+context, Platt calibration
+comparators:
+  - exp-0016                # history only + Platt (same ranking as exp-0004)
+  - exp-0001                # Stage-1 logistic baseline (uncalibrated)
+survival_champion: exp-0013 # Random Survival Forest, 28-day risk
+data_version: panel_v5
+panel_sha256: 7bb6cc0b81eb7f340bc5f2b9af7f2b07289804264005e3ec497818765da477b7
+labels: [y7, y28]
+# Holdout: test player group, season 2024/25. Training pool: train + validation player groups,
+# seasons 2014/15 onwards, outcome windows closing >= 7 days before the first holdout Sunday.
+training_roles: [train, validation]
+populations:
+  in_season:                # PRIMARY (owner ruling, PLAN open decision 18)
+    months: [9, 10, 11, 12, 1, 2, 3, 4]
+  all_weeks:                # mandatory secondary / sensitivity analysis
+    months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+n_resamples: 1000
+seed: 20261020
+conformal_alphas: [0.05, 0.10, 0.20]

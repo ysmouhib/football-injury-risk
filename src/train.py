@@ -120,7 +120,8 @@ def _fit_predict(exp: dict, train: pd.DataFrame, label: str, *scored: pd.DataFra
 
 
 def _calibrate(exp: dict, panel: pd.DataFrame, label: str, origin: int, p_raw: np.ndarray,
-               train_first: int, deployed) -> tuple[np.ndarray, dict, pd.DataFrame]:
+               train_first: int, deployed, train_roles: tuple[str, ...] = ("train",),
+               allow_holdout: bool = False) -> tuple[np.ndarray, dict, pd.DataFrame]:
     """Calibrated validation probabilities, a record of the calibration fit, and the calibrated
     out-of-sample scores of calibration half B (for conformal prediction).
 
@@ -128,7 +129,7 @@ def _calibrate(exp: dict, panel: pd.DataFrame, label: str, origin: int, p_raw: n
     A of the calibration season and is applied to the deployed model's raw validation scores. With
     `fit_on: deployed` it learns from the deployed model's own (in-sample) scores of the same rows.
     """
-    cs = splits.calibration_split(panel, exp["data"], origin, label)
+    cs = splits.calibration_split(panel, exp["data"], origin, label, train_roles, allow_holdout)
     inner = panel.iloc[cs.inner_idx]
     inner = inner[inner["season"] >= train_first]
     half_a, half_b = panel.iloc[cs.calib_a_idx], panel.iloc[cs.calib_b_idx]

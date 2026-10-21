@@ -198,3 +198,19 @@ def test_calibration_splits_stay_in_training_group_and_time(panel, cfg):
             assert (inner["t"] + horizon).max() + gap <= calib["t"].min(), cs.name
             assert (calib["t"] + horizon).max() + gap <= panel["t"].iloc[val.eval_idx].min(), cs.name
             assert set(calib["season"]) == {origin - 1}
+
+
+def test_final_calibration_split_uses_only_the_training_pool(panel, cfg):
+    """The final run's calibration rows: train + validation groups, before the holdout, never test players."""
+    roles = splits.player_roles(panel["player_id"], cfg["splits"]["group_fractions"], cfg["seed"])
+    holdout = cfg["splits"]["holdout_season"]
+    gap = pd.Timedelta(days=cfg["splits"]["embargo_days"])
+    first_holdout_t = splits.first_sunday_of_season(holdout)
+    for label in PRIMARY_LABELS:
+        cs = splits.calibration_split(panel, cfg, holdout, label, ("train", "validation"), allow_holdout=True)
+        idx = np.concatenate([cs.inner_idx, cs.calib_a_idx, cs.calib_b_idx])
+        rows = panel.iloc[idx]
+        assert len(cs.inner_idx) and len(cs.calib_a_idx) and len(cs.calib_b_idx)
+        assert roles.iloc[idx].isin(["train", "validation"]).all()
+        assert rows["season"].max() == holdout - 1
+        assert (rows["t"] + pd.Timedelta(days=cs.horizon_days)).max() + gap <= first_holdout_t
