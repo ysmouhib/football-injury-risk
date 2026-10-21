@@ -1,0 +1,25 @@
+id: exp-0028
+title: Current-practice workload-ratio baseline vs the frozen champion (holdout)
+stage: 7
+analysis: acwr
+question: >-
+  On the same holdout player-weeks, how does a workload-ratio rule of the kind used in practice
+  (continuous ratio, and the classic flag ratio > 1.5) compare with the frozen champion in PR-AUC
+  and net benefit?
+# Baseline comparison, NOT a challenger: no promotion decision whatever the outcome.
+# The specified 7:28-day ACWR from dated minutes (src/acwr.py) cannot be computed on the datalake,
+# which holds season totals only (PLAN decision 20). Scored instead, and labelled as such: the
+# season-scale analogues defined in Stage 2 before any loop ran (src/load.py; columns of panel_v5;
+# undefined when the chronic term is < 90 minutes; undefined ratios rank lowest, never flagged).
+champion: exp-0018
+data_config: configs/data.yaml
+forms:
+  season_uncoupled: season_acwr_uncoupled   # primary: last-season minutes / mean of the two seasons before
+  season_coupled: season_acwr_coupled       # secondary: last-season minutes / mean of the last three seasons
+flag_above: 1.5
+populations: [in_season, all_weeks]   # first = primary
+labels: [y7, y28]
+# Drawn on the holdout decision-curve figure (reports/figures/fig11_holdout_decision_curves.png).
+overlay: {form: season_uncoupled, name: "season workload ratio > 1.5 (ACWR proxy)"}
+seed: 20261020
+n_resamples: 1000
