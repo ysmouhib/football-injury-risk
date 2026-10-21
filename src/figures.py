@@ -323,8 +323,12 @@ if __name__ == "__main__":
     main()
 
 
-def holdout_figures(path=None) -> None:
-    """Reliability and decision curves of the one-shot holdout evaluation (the evaluation protocol §6.2)."""
+def holdout_figures(path=None, overlay: dict | None = None) -> None:
+    """Reliability and decision curves of the one-shot holdout evaluation (the evaluation protocol §6.2).
+
+    overlay: optional {(label, population): (name, net benefit per threshold)} drawn dashed on the
+    decision curves (Stage 7 baseline comparison).
+    """
     from .final_run import FINAL_DIR
 
     r = json.loads(((path or FINAL_DIR / "holdout") / "results.json").read_text(encoding="utf-8"))
@@ -366,6 +370,9 @@ def holdout_figures(path=None) -> None:
                                                   (comparator, f"{comparator} history only"),
                                                   (surv, f"{surv} survival"))):
                 ax.plot(pts[keep], np.array(dc["net_benefit"][m])[keep], color=colour, lw=LINE, label=name)
+            if overlay and (label, pop) in overlay:
+                name, nb = overlay[(label, pop)]
+                ax.plot(pts[keep], np.array(nb)[keep], color=SERIES[3], lw=LINE, ls="--", label=name)
             ax.plot(pts[keep], np.array(dc["treat_all"])[keep], color=MUTED, lw=1, label="treat all")
             ax.axhline(0, color=AXIS, lw=1)
             peak = max(np.array(dc["net_benefit"][champion])[keep].max(), 1e-4)
@@ -382,3 +389,134 @@ def holdout_figures(path=None) -> None:
                  x=0.01, ha="left", color=INK)
     fig.tight_layout()
     _save(fig, "fig11_holdout_decision_curves")
+
+
+# --- Stage 7 practitioner evidence pack ------------------------------------------------------
+
+LEAGUES = {"GB1": "Premier League", "ES1": "LaLiga", "IT1": "Serie A", "FR1": "Ligue 1", "L1": "Bundesliga"}
+DIMENSIONS = {"position": "position", "age_band": "age", "usage_band": "minutes last season", "league": "league"}
+
+
+def operational(result: dict, name: str) -> None:
+    """Alarm burden and injuries caught at the pre-selected operating thresholds (exp-0024)."""
+    labels = list(result["labels"])
+    fig, axes = plt.subplots(len(labels), 2, figsize=(7.2, 3.0 * len(labels)))
+    for row, label in enumerate(labels):
+        ms = result["labels"][label]["by_multiple"]
+        x = np.arange(len(ms))
+        ticks = [f"{m['multiple']:g}× prevalence\nthreshold {m['threshold']:.3f}" for m in ms]
+        ax = axes[row, 0]
+        v = np.array([m["flags_per_week_per_25"] for m in ms])
+        ci = np.array([m["flags_per_week_per_25_ci"] for m in ms])
+        ax.bar(x, v, width=0.55, color=SERIES[0], edgecolor=SURFACE, lw=1)
+        ax.errorbar(x, v, yerr=[v - ci[:, 0], ci[:, 1] - v], fmt="none", ecolor=INK_2, elinewidth=1)
+        for xi, m in zip(x, ms):
+            ax.annotate(f"precision {m['precision']:.3f}", (xi, ci[xi, 1]), xytext=(0, 3), textcoords="offset points",
+                        ha="center", fontsize=7.5, color=INK_2)
+        ax.set_ylim(0, ci[:, 1].max() * 1.18)
+        ax.set_xticks(x, ticks, fontsize=7.5)
+        ax.set_ylabel("flags per week per 25 players")
+        ax.set_title(f"{label[1:]}-day horizon: alarm burden", loc="left", fontsize=8.5)
+        ax.grid(axis="x", visible=False)
+        ax = axes[row, 1]
+        caught = np.array([m["caught_per_squad_90d"] for m in ms])
+        missed = np.array([m["missed_per_squad_90d"] for m in ms])
+        ax.bar(x, caught, width=0.55, color=SERIES[0], edgecolor=SURFACE, lw=1, label="caught (flag before onset)")
+        ax.bar(x, missed, width=0.55, bottom=caught, color=AXIS, edgecolor=SURFACE, lw=1, label="missed")
+        for xi, m in zip(x, ms):
+            ax.annotate(f"{m['event_recall']:.0%} caught\nlead {m['median_lead_days']:.0f} d",
+                        (xi, caught[xi] + missed[xi]), xytext=(0, 3), textcoords="offset points", ha="center",
+                        fontsize=7.5, color=INK_2)
+        ax.set_ylim(0, (caught + missed).max() * 1.3)
+        ax.set_xticks(x, ticks, fontsize=7.5)
+        ax.set_ylabel("injuries per 25-player squad per 90 days")
+        ax.set_title(f"{label[1:]}-day horizon: injuries caught vs missed", loc="left", fontsize=8.5)
+        ax.grid(axis="x", visible=False)
+    axes[0, 1].legend(loc="upper left", fontsize=7.5)
+    fig.suptitle("Frozen champion on the holdout 2024/25 (in-season): operating thresholds chosen on 2023/24",
+                 x=0.01, ha="left", color=INK)
+    fig.tight_layout()
+    _save(fig, f"{name}_operational")
+
+
+def subgroups(result: dict, cfg: dict) -> None:
+    """Forest plot of discrimination, calibration and conformal coverage by subgroup (exp-0025/0027)."""
+    primary = cfg["populations"][0]
+    cells = [c for c in result["cells"] if c["population"] == primary]
+    keys = list(dict.fromkeys((c["dimension"], c["group"]) for c in cells))
+    alpha = result["conformal"]["alpha"]
+    panels = [("pr_auc", "y7", "PR-AUC, 7-day"), ("pr_auc", "y28", "PR-AUC, 28-day"),
+              ("calibration_slope", "y7", "calibration slope, 7-day"),
+              ("calibration_slope", "y28", "calibration slope, 28-day"),
+              ("coverage", result["conformal"]["label"], f"coverage, 28-day (α = {alpha:.2f})")]
+    fig, axes = plt.subplots(1, len(panels), figsize=(9.6, 0.36 * len(keys) + 1.4), sharey=True)
+    ypos = np.arange(len(keys))[::-1]
+    single = len({d for d, _ in keys}) == 1
+    for ax, (metric, label, title) in zip(axes, panels):
+        for yp, key in zip(ypos, keys):
+            c = next(c for c in cells if (c["dimension"], c["group"]) == key and c["label"] == label)
+            if c["status"] != "ok":
+                ax.text(0.5, yp, "insufficient", transform=ax.get_yaxis_transform(), ha="center", va="center",
+                        fontsize=7, color=MUTED)
+                continue
+            lo, hi = c[f"{metric}_ci"]
+            ax.plot([lo, hi], [yp, yp], color=SERIES[0], lw=LINE, solid_capstyle="round")
+            ax.plot(c[metric], yp, "o", color=SERIES[0], ms=MARKER, mec=SURFACE, mew=1.2)
+            if metric == "pr_auc":
+                ax.plot(c["prevalence"], yp, "|", color=MUTED, ms=9, mew=1.6)
+        if metric == "calibration_slope":
+            ax.axvline(1, color=AXIS, lw=1)
+        if metric == "coverage":
+            ax.axvline(1 - alpha, color=AXIS, lw=1)
+        if metric == "pr_auc":
+            ax.set_xlim(0, None)
+        ax.set_title(title, loc="left", fontsize=8.5)
+        ax.grid(axis="y", visible=False)
+    for i in range(1, len(keys)):
+        if keys[i][0] != keys[i - 1][0]:
+            for ax in axes:
+                ax.axhline(ypos[i] + 0.5, color=GRID, lw=0.8)
+    names = [LEAGUES.get(g, g) if single else f"{DIMENSIONS[d]}: {g}" for d, g in keys]
+    axes[0].set_yticks(ypos, names)
+    axes[0].set_ylim(-0.6, len(keys) - 0.4)
+    axes[0].plot([], [], "|", color=MUTED, ms=9, mew=1.6, label="prevalence (no-skill PR-AUC)")
+    axes[0].legend(loc="lower right", fontsize=7, handlelength=1)
+    fig.suptitle(f"{cfg['title']} (dot: estimate; line: 95% player-cluster bootstrap CI)",
+                 x=0.01, ha="left", color=INK, fontsize=9.5)
+    fig.tight_layout()
+    _save(fig, f"{cfg['id']}_{cfg['figure']}")
+
+
+def seasons(result: dict, cfg: dict) -> None:
+    """Per-season PR-AUC forest plot over the development seasons (exp-0026)."""
+    pops = cfg["populations"]
+    names = {"in_season": "in-season Sep–Apr (primary)", "all_weeks": "all weeks"}
+    fig, axes = plt.subplots(1, len(cfg["labels"]), figsize=(7.2, 4.2), sharey=True)
+    ypos = np.arange(len(cfg["seasons"]))[::-1]
+    for ax, label in zip(axes, cfg["labels"]):
+        for yp, s in zip(ypos, cfg["seasons"]):
+            if s in cfg["covid_seasons"]:
+                ax.axhspan(yp - 0.5, yp + 0.5, color=GRID, alpha=0.55, lw=0)
+        for pop, colour, off, marker in ((pops[0], SERIES[0], 0.15, "o"), (pops[1], SERIES[1], -0.15, "s")):
+            cells = {c["season"]: c for c in result["cells"] if c["label"] == label and c["population"] == pop}
+            for yp, s in zip(ypos, cfg["seasons"]):
+                c = cells[s]
+                ax.plot(c["pr_auc_ci"], [yp + off] * 2, color=colour, lw=LINE, solid_capstyle="round")
+                ax.plot(c["pr_auc"], yp + off, marker, color=colour, ms=MARKER - 1, mec=SURFACE, mew=1,
+                        label=names[pop] if yp == ypos[0] else None)
+                ax.plot(c["prevalence"], yp + off, "|", color=colour, ms=7, mew=1.4, alpha=0.7)
+        ax.set_xlim(0, None)
+        ax.set_title(f"{label[1:]}-day horizon", loc="left", fontsize=8.5)
+        ax.set_xlabel("PR-AUC (tick: prevalence)")
+        ax.grid(axis="y", visible=False)
+    axes[0].set_yticks(ypos, [f"{s}/{(s + 1) % 100:02d}" for s in cfg["seasons"]])
+    axes[0].set_ylim(-0.6, len(ypos) - 0.4)
+    for s in cfg["covid_seasons"]:
+        yp = ypos[cfg["seasons"].index(s)]
+        axes[-1].annotate("COVID-19", (1, yp), xycoords=("axes fraction", "data"), xytext=(-2, 0),
+                          textcoords="offset points", ha="right", va="center", fontsize=7, color=MUTED)
+    axes[0].legend(loc="lower right", fontsize=7)
+    fig.suptitle("Champion pipeline refitted per development season (validation players; 95% CI)",
+                 x=0.01, ha="left", color=INK)
+    fig.tight_layout()
+    _save(fig, f"{cfg['id']}_seasons")
