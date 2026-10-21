@@ -1,0 +1,394 @@
+{
+  "id": "exp-0024",
+  "config_path": "configs/exp-0024.yaml",
+  "git": {
+    "commit": "4d143f5f032daa6c308501b521768ed3e06bc8f9",
+    "dirty": false
+  },
+  "panel_sha256": "7bb6cc0b81eb7f340bc5f2b9af7f2b07289804264005e3ec497818765da477b7",
+  "final_run_commit": "90209ca3ba9f48bd85bf00bdd712a8fa5333a105",
+  "seed": 20261020,
+  "n_resamples": 1000,
+  "selection": {
+    "y7": {
+      "rows": 29675,
+      "positives": 604,
+      "prevalence": 0.020353833192923335,
+      "by_multiple": [
+        {
+          "multiple": 1.5,
+          "target_precision": 0.030530749789385005,
+          "threshold": 0.017832817799829745,
+          "precision": 0.0305322323225314,
+          "recall": 0.7284768211920529,
+          "flagged_share": 0.48562763268744735,
+          "achieved": true
+        },
+        {
+          "multiple": 2.0,
+          "target_precision": 0.04070766638584667,
+          "threshold": 0.026759884696369758,
+          "precision": 0.04071046840616158,
+          "recall": 0.4288079470198676,
+          "flagged_share": 0.21438921651221568,
+          "achieved": true
+        },
+        {
+          "multiple": 3.0,
+          "target_precision": 0.06106149957877001,
+          "threshold": 0.05130178593492917,
+          "precision": 0.06108897742363878,
+          "recall": 0.076158940397351,
+          "flagged_share": 0.025374894692502106,
+          "achieved": true
+        }
+      ]
+    },
+    "y28": {
+      "rows": 29495,
+      "positives": 2276,
+      "prevalence": 0.07716562129174437,
+      "by_multiple": [
+        {
+          "multiple": 1.5,
+          "target_precision": 0.11574843193761655,
+          "threshold": 0.06707590057850887,
+          "precision": 0.11575187195163839,
+          "recall": 0.7403339191564148,
+          "flagged_share": 0.49354127818274285,
+          "achieved": true
+        },
+        {
+          "multiple": 2.0,
+          "target_precision": 0.15433124258348874,
+          "threshold": 0.10137594666242843,
+          "precision": 0.15434924787442772,
+          "recall": 0.4147627416520211,
+          "flagged_share": 0.20735717918291235,
+          "achieved": true
+        },
+        {
+          "multiple": 3.0,
+          "target_precision": 0.2314968638752331,
+          "threshold": 0.18013623416443242,
+          "precision": 0.23166023166023167,
+          "recall": 0.07908611599297012,
+          "flagged_share": 0.026343448042041025,
+          "achieved": true
+        }
+      ]
+    }
+  },
+  "labels": {
+    "y7": {
+      "rows": 15435,
+      "players": 565,
+      "positives": 378,
+      "prevalence": 0.024489795918367346,
+      "sundays": 35,
+      "rows_per_sunday": 441.0,
+      "events": 378,
+      "by_multiple": [
+        {
+          "multiple": 1.5,
+          "threshold": 0.017832817799829745,
+          "target_precision": 0.030530749789385005,
+          "calibration_precision": 0.0305322323225314,
+          "flags_per_sunday": 227.34285714285716,
+          "flags_per_week_per_25": 12.887917071590541,
+          "precision": 0.034937790624607265,
+          "recall": 0.7354497354497355,
+          "events_caught": 278,
+          "events_missed": 100,
+          "event_recall": 0.7354497354497355,
+          "caught_per_squad_90d": 5.789254477301125,
+          "missed_per_squad_90d": 2.0824656393169514,
+          "median_lead_days": 5.0,
+          "flags_per_sunday_ci": [
+            209.76642857142858,
+            243.77785714285713
+          ],
+          "flags_per_week_per_25_ci": [
+            11.874416740466664,
+            13.809238153413716
+          ],
+          "precision_ci": [
+            0.030474232917083358,
+            0.03957951798644683
+          ],
+          "recall_ci": [
+            0.6880092270194986,
+            0.7835705926894747
+          ],
+          "event_recall_ci": [
+            0.6880092270194986,
+            0.7835705926894747
+          ],
+          "caught_per_squad_90d_ci": [
+            4.9385637096697375,
+            6.716167506615981
+          ],
+          "missed_per_squad_90d_ci": [
+            1.6847985907847294,
+            2.49616317768004
+          ],
+          "median_lead_days_ci": [
+            4.0,
+            5.0
+          ]
+        },
+        {
+          "multiple": 2.0,
+          "threshold": 0.026759884696369758,
+          "target_precision": 0.04070766638584667,
+          "calibration_precision": 0.04071046840616158,
+          "flags_per_sunday": 95.85714285714286,
+          "flags_per_week_per_25": 5.434078393262067,
+          "precision": 0.04560357675111774,
+          "recall": 0.40476190476190477,
+          "events_caught": 153,
+          "events_missed": 225,
+          "event_recall": 0.40476190476190477,
+          "caught_per_squad_90d": 3.1861724281549355,
+          "missed_per_squad_90d": 4.68554768846314,
+          "median_lead_days": 5.0,
+          "flags_per_sunday_ci": [
+            83.91142857142857,
+            107.80499999999999
+          ],
+          "flags_per_week_per_25_ci": [
+            4.748280110389388,
+            6.118887910997388
+          ],
+          "precision_ci": [
+            0.038515828659710954,
+            0.053289857796861184
+          ],
+          "recall_ci": [
+            0.34300414624952885,
+            0.4637009925859412
+          ],
+          "event_recall_ci": [
+            0.34300414624952885,
+            0.4637009925859412
+          ],
+          "caught_per_squad_90d_ci": [
+            2.518939252483492,
+            3.9107503086317332
+          ],
+          "missed_per_squad_90d_ci": [
+            4.085778500970271,
+            5.317271045002558
+          ],
+          "median_lead_days_ci": [
+            4.0,
+            5.0
+          ]
+        },
+        {
+          "multiple": 3.0,
+          "threshold": 0.05130178593492917,
+          "target_precision": 0.06106149957877001,
+          "calibration_precision": 0.06108897742363878,
+          "flags_per_sunday": 11.0,
+          "flags_per_week_per_25": 0.6235827664399093,
+          "precision": 0.06753246753246753,
+          "recall": 0.06878306878306878,
+          "events_caught": 26,
+          "events_missed": 352,
+          "event_recall": 0.06878306878306878,
+          "caught_per_squad_90d": 0.5414410662224074,
+          "missed_per_squad_90d": 7.330279050395669,
+          "median_lead_days": 4.0,
+          "flags_per_sunday_ci": [
+            6.771428571428571,
+            15.457857142857142
+          ],
+          "flags_per_week_per_25_ci": [
+            0.3874319694236825,
+            0.8704087837442708
+          ],
+          "precision_ci": [
+            0.04588982795504535,
+            0.09111659391586342
+          ],
+          "recall_ci": [
+            0.03601054625469099,
+            0.10656968283182809
+          ],
+          "event_recall_ci": [
+            0.03601054625469099,
+            0.10656968283182809
+          ],
+          "caught_per_squad_90d_ci": [
+            0.27244283532411395,
+            0.8557878618560943
+          ],
+          "missed_per_squad_90d_ci": [
+            6.414774268597232,
+            8.252863727385211
+          ],
+          "median_lead_days_ci": [
+            3.0,
+            5.0
+          ]
+        }
+      ]
+    },
+    "y28": {
+      "rows": 15355,
+      "players": 565,
+      "positives": 1402,
+      "prevalence": 0.09130576359492022,
+      "sundays": 35,
+      "rows_per_sunday": 438.7142857142857,
+      "events": 408,
+      "by_multiple": [
+        {
+          "multiple": 1.5,
+          "threshold": 0.06707590057850887,
+          "target_precision": 0.11574843193761655,
+          "calibration_precision": 0.11575187195163839,
+          "flags_per_sunday": 223.31428571428572,
+          "flags_per_week_per_25": 12.725496580918266,
+          "precision": 0.13114124872057317,
+          "recall": 0.7310984308131241,
+          "events_caught": 314,
+          "events_missed": 94,
+          "event_recall": 0.7696078431372549,
+          "caught_per_squad_90d": 6.573010187468019,
+          "missed_per_squad_90d": 1.9677164255477508,
+          "median_lead_days": 24.0,
+          "flags_per_sunday_ci": [
+            206.135,
+            239.48714285714286
+          ],
+          "flags_per_week_per_25_ci": [
+            11.717333923992703,
+            13.644607404639881
+          ],
+          "precision_ci": [
+            0.11540642736563383,
+            0.14765437794150915
+          ],
+          "recall_ci": [
+            0.6818824110671937,
+            0.778665124499958
+          ],
+          "event_recall_ci": [
+            0.7238950931931332,
+            0.8143916547648755
+          ],
+          "caught_per_squad_90d_ci": [
+            5.585250746692579,
+            7.5491340019619395
+          ],
+          "missed_per_squad_90d_ci": [
+            1.5867069394360387,
+            2.417797921545842
+          ],
+          "median_lead_days_ci": [
+            24.0,
+            25.0
+          ]
+        },
+        {
+          "multiple": 2.0,
+          "threshold": 0.10137594666242843,
+          "target_precision": 0.15433124258348874,
+          "calibration_precision": 0.15434924787442772,
+          "flags_per_sunday": 86.88571428571429,
+          "flags_per_week_per_25": 4.951155975252361,
+          "precision": 0.16606379480434066,
+          "recall": 0.3601997146932953,
+          "events_caught": 176,
+          "events_missed": 232,
+          "event_recall": 0.43137254901960786,
+          "caught_per_squad_90d": 3.684235009536214,
+          "missed_per_squad_90d": 4.856491603479555,
+          "median_lead_days": 24.0,
+          "flags_per_sunday_ci": [
+            75.11,
+            98.80142857142857
+          ],
+          "flags_per_week_per_25_ci": [
+            4.248525767649367,
+            5.624141752255631
+          ],
+          "precision_ci": [
+            0.13969060644613673,
+            0.19374859169816228
+          ],
+          "recall_ci": [
+            0.30221349663784824,
+            0.4163680912657893
+          ],
+          "event_recall_ci": [
+            0.3702721196374383,
+            0.492974769738021
+          ],
+          "caught_per_squad_90d_ci": [
+            2.937210787275368,
+            4.491278261125329
+          ],
+          "missed_per_squad_90d_ci": [
+            4.222761441631288,
+            5.482374109145978
+          ],
+          "median_lead_days_ci": [
+            23.0,
+            25.0
+          ]
+        },
+        {
+          "multiple": 3.0,
+          "threshold": 0.18013623416443242,
+          "target_precision": 0.2314968638752331,
+          "calibration_precision": 0.23166023166023167,
+          "flags_per_sunday": 11.085714285714285,
+          "flags_per_week_per_25": 0.6317160534028003,
+          "precision": 0.22938144329896906,
+          "recall": 0.06348074179743224,
+          "events_caught": 34,
+          "events_missed": 374,
+          "event_recall": 0.08333333333333333,
+          "caught_per_squad_90d": 0.7117272177513141,
+          "missed_per_squad_90d": 7.828999395264455,
+          "median_lead_days": 23.0,
+          "flags_per_sunday_ci": [
+            6.856428571428571,
+            15.517142857142854
+          ],
+          "flags_per_week_per_25_ci": [
+            0.3911217226106236,
+            0.8847945470148476
+          ],
+          "precision_ci": [
+            0.15501658109663627,
+            0.3072965801886793
+          ],
+          "recall_ci": [
+            0.03281719955605915,
+            0.09652458216133487
+          ],
+          "event_recall_ci": [
+            0.044153876426603705,
+            0.12564164279340626
+          ],
+          "caught_per_squad_90d_ci": [
+            0.3644465860365626,
+            1.0873591333259955
+          ],
+          "missed_per_squad_90d_ci": [
+            6.870826759999921,
+            8.768251389570358
+          ],
+          "median_lead_days_ci": [
+            22.0,
+            26.0
+          ]
+        }
+      ]
+    }
+  }
+}

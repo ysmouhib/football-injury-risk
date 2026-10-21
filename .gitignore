@@ -6,11 +6,11 @@ __pycache__/
 .pytest_cache/
 
 # local working documents and generated outputs
-PLAN.md
-EXPERIMENTS.md
-DATA_CARD.md
-MODEL_CARD.md
-FINAL_RUN.md
-reports/
-data/
-Makefile
+/PLAN.md
+/EXPERIMENTS.md
+/DATA_CARD.md
+/MODEL_CARD.md
+/FINAL_RUN.md
+/reports/
+/data/
+/Makefile

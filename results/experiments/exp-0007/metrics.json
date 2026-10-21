@@ -1,0 +1,283 @@
+{
+  "id": "exp-0007",
+  "labels": {
+    "y7": {
+      "per_origin": {
+        "2021": {
+          "n": 22280.0,
+          "positives": 362.0,
+          "prevalence": 0.016247755834829444,
+          "pr_auc": 0.03559524101433827,
+          "sens_at_90spec": 0.26519337016574585,
+          "threshold_at_90spec": 0.6522272829537146,
+          "mcc_at_90spec": 0.06882896548032887,
+          "brier": 0.2407287033586219,
+          "calibration_slope": 0.946563363171701,
+          "calibration_intercept": -4.1687670123241265,
+          "mean_predicted": 0.46911500759083674
+        },
+        "2022": {
+          "n": 22027.0,
+          "positives": 326.0,
+          "prevalence": 0.014800018159531483,
+          "pr_auc": 0.03403507167394468,
+          "sens_at_90spec": 0.21779141104294478,
+          "threshold_at_90spec": 0.6458219000075569,
+          "mcc_at_90spec": 0.0470521374200887,
+          "brier": 0.2381449854333004,
+          "calibration_slope": 0.972789076400109,
+          "calibration_intercept": -4.25590860552475,
+          "mean_predicted": 0.46641227664801016
+        },
+        "2023": {
+          "n": 22346.0,
+          "positives": 360.0,
+          "prevalence": 0.01611026581938602,
+          "pr_auc": 0.031049425408710894,
+          "sens_at_90spec": 0.2388888888888889,
+          "threshold_at_90spec": 0.6488517744579834,
+          "mcc_at_90spec": 0.05773537999075583,
+          "brier": 0.23283623729945377,
+          "calibration_slope": 0.9907795374455699,
+          "calibration_intercept": -4.137369599438443,
+          "mean_predicted": 0.4610162964530691
+        }
+      },
+      "aggregate": {
+        "main": {
+          "pr_auc": 0.031049425408710894,
+          "pr_auc_ci": [
+            0.02678208301416531,
+            0.0369641308374768
+          ],
+          "pr_auc_se": 0.0026302806678677737,
+          "calibration_slope": 0.9907795374455699
+        },
+        "mean_origins": {
+          "pr_auc": 0.03355991269899795,
+          "pr_auc_ci": [
+            0.028686558915184845,
+            0.04112223507545285
+          ],
+          "pr_auc_se": 0.0030301249698315882,
+          "calibration_slope": 0.9700439923391265
+        }
+      },
+      "strata_league": [
+        {
+          "stratum": "ES1",
+          "n": 12630,
+          "positives": 181,
+          "pr_auc_mean_origins": 0.056100246943037176
+        },
+        {
+          "stratum": "FR1",
+          "n": 13410,
+          "positives": 189,
+          "pr_auc_mean_origins": 0.033373473781562864
+        },
+        {
+          "stratum": "GB1",
+          "n": 14116,
+          "positives": 177,
+          "pr_auc_mean_origins": 0.02268187988827532
+        },
+        {
+          "stratum": "IT1",
+          "n": 12412,
+          "positives": 213,
+          "pr_auc_mean_origins": 0.03244677828874352
+        },
+        {
+          "stratum": "L1",
+          "n": 14085,
+          "positives": 288,
+          "pr_auc_mean_origins": 0.03572715435158632
+        }
+      ],
+      "strata_position": [
+        {
+          "stratum": "Attack",
+          "n": 17199,
+          "positives": 313,
+          "pr_auc_mean_origins": 0.0432927408567017
+        },
+        {
+          "stratum": "Defender",
+          "n": 20603,
+          "positives": 379,
+          "pr_auc_mean_origins": 0.0351607324019944
+        },
+        {
+          "stratum": "Goalkeeper",
+          "n": 8420,
+          "positives": 52,
+          "pr_auc_mean_origins": 0.012996300524088839
+        },
+        {
+          "stratum": "Midfield",
+          "n": 20431,
+          "positives": 304,
+          "pr_auc_mean_origins": 0.029819027196456543
+        }
+      ]
+    },
+    "y28": {
+      "per_origin": {
+        "2021": {
+          "n": 22200.0,
+          "positives": 1378.0,
+          "prevalence": 0.06207207207207207,
+          "pr_auc": 0.1242197274879394,
+          "sens_at_90spec": 0.27358490566037735,
+          "threshold_at_90spec": 0.6540017186061434,
+          "mcc_at_90spec": 0.13346210788277055,
+          "brier": 0.24045583939550189,
+          "calibration_slope": 0.9155468556268808,
+          "calibration_intercept": -2.7867987469058297,
+          "mean_predicted": 0.47379319715979173
+        },
+        "2022": {
+          "n": 21924.0,
+          "positives": 1237.0,
+          "prevalence": 0.05642218573253056,
+          "pr_auc": 0.11083016653533864,
+          "sens_at_90spec": 0.22069523039611966,
+          "threshold_at_90spec": 0.6494844778692721,
+          "mcc_at_90spec": 0.09019970901082164,
+          "brier": 0.237889895194731,
+          "calibration_slope": 0.97273115448243,
+          "calibration_intercept": -2.8811615267785418,
+          "mean_predicted": 0.4709546909157776
+        },
+        "2023": {
+          "n": 22234.0,
+          "positives": 1387.0,
+          "prevalence": 0.062381937573086264,
+          "pr_auc": 0.11607197506950888,
+          "sens_at_90spec": 0.25378514780100936,
+          "threshold_at_90spec": 0.6528234668073489,
+          "mcc_at_90spec": 0.11910223771339103,
+          "brier": 0.23324383059492187,
+          "calibration_slope": 0.9832798330701958,
+          "calibration_intercept": -2.743209027525577,
+          "mean_predicted": 0.46642234430868124
+        }
+      },
+      "aggregate": {
+        "main": {
+          "pr_auc": 0.11607197506950888,
+          "pr_auc_ci": [
+            0.10044161673673209,
+            0.13459231425370233
+          ],
+          "pr_auc_se": 0.008947164712421131,
+          "calibration_slope": 0.9832798330701958
+        },
+        "mean_origins": {
+          "pr_auc": 0.11704062303092898,
+          "pr_auc_ci": [
+            0.10259430109488028,
+            0.13169273436087245
+          ],
+          "pr_auc_se": 0.007373020733397068,
+          "calibration_slope": 0.9571859477265022
+        }
+      },
+      "strata_league": [
+        {
+          "stratum": "ES1",
+          "n": 12618,
+          "positives": 673,
+          "pr_auc_mean_origins": 0.15614044938224636
+        },
+        {
+          "stratum": "FR1",
+          "n": 13379,
+          "positives": 715,
+          "pr_auc_mean_origins": 0.11878884603035962
+        },
+        {
+          "stratum": "GB1",
+          "n": 14064,
+          "positives": 686,
+          "pr_auc_mean_origins": 0.07931836255105958
+        },
+        {
+          "stratum": "IT1",
+          "n": 12230,
+          "positives": 823,
+          "pr_auc_mean_origins": 0.12498184958418584
+        },
+        {
+          "stratum": "L1",
+          "n": 14067,
+          "positives": 1105,
+          "pr_auc_mean_origins": 0.12318240917201669
+        }
+      ],
+      "strata_position": [
+        {
+          "stratum": "Attack",
+          "n": 17113,
+          "positives": 1170,
+          "pr_auc_mean_origins": 0.13881544293842984
+        },
+        {
+          "stratum": "Defender",
+          "n": 20528,
+          "positives": 1438,
+          "pr_auc_mean_origins": 0.12001450377977357
+        },
+        {
+          "stratum": "Goalkeeper",
+          "n": 8402,
+          "positives": 211,
+          "pr_auc_mean_origins": 0.04870995208223452
+        },
+        {
+          "stratum": "Midfield",
+          "n": 20315,
+          "positives": 1183,
+          "pr_auc_mean_origins": 0.10544594186363787
+        }
+      ]
+    }
+  },
+  "comparison": {
+    "aggregation": "main",
+    "labels": {
+      "y7": {
+        "champion_pr_auc": 0.030721074851193155,
+        "challenger_pr_auc": 0.031049425408710894,
+        "delta": 0.0003283505575177384,
+        "delta_ci": [
+          -0.0003508012006617605,
+          0.0010113998736990615
+        ],
+        "champion_slope": 0.9957234134654289,
+        "challenger_slope": 0.9907795374455699,
+        "slope_regression": 0.004943876019859017,
+        "cond1_delta_positive": true,
+        "cond2_ci_excludes_zero": false,
+        "cond3_no_slope_regression": true
+      },
+      "y28": {
+        "champion_pr_auc": 0.11374397319516327,
+        "challenger_pr_auc": 0.11607197506950888,
+        "delta": 0.002328001874345606,
+        "delta_ci": [
+          -0.0010539856288816047,
+          0.006042064411702064
+        ],
+        "champion_slope": 0.9954261399146439,
+        "challenger_slope": 0.9832798330701958,
+        "slope_regression": 0.012146306844448063,
+        "cond1_delta_positive": true,
+        "cond2_ci_excludes_zero": false,
+        "cond3_no_slope_regression": true
+      }
+    },
+    "verdict": "INCONCLUSIVE"
+  }
+}

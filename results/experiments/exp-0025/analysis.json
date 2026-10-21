@@ -1,0 +1,787 @@
+{
+  "id": "exp-0025",
+  "config_path": "configs/exp-0025.yaml",
+  "git": {
+    "commit": "1ca576310605fee08f19431dbf7cd014b669fdb5",
+    "dirty": false
+  },
+  "panel_sha256": "7bb6cc0b81eb7f340bc5f2b9af7f2b07289804264005e3ec497818765da477b7",
+  "final_run_commit": "90209ca3ba9f48bd85bf00bdd712a8fa5333a105",
+  "seed": 20261020,
+  "n_resamples": 1000,
+  "min_cell": 500,
+  "usage_cut_minutes": 1945.8424304216858,
+  "conformal": {
+    "alpha": 0.1,
+    "q0": 0.11558624454234363,
+    "q1": 0.9604554503479226,
+    "label": "y28"
+  },
+  "unknown": {
+    "y7/in_season/position": 0,
+    "y7/in_season/age_band": 0,
+    "y7/in_season/usage_band": 0,
+    "y7/all_weeks/position": 0,
+    "y7/all_weeks/age_band": 0,
+    "y7/all_weeks/usage_band": 0,
+    "y28/in_season/position": 0,
+    "y28/in_season/age_band": 0,
+    "y28/in_season/usage_band": 0,
+    "y28/all_weeks/position": 0,
+    "y28/all_weeks/age_band": 0,
+    "y28/all_weeks/usage_band": 0
+  },
+  "cells": [
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "position",
+      "group": "GK",
+      "n": 1814,
+      "players": 59,
+      "positives": 19,
+      "prevalence": 0.010474090407938258,
+      "status": "ok",
+      "pr_auc": 0.037845478682151455,
+      "pr_auc_ci": [
+        0.01694333866086785,
+        0.07810076667957845
+      ],
+      "calibration_slope": 1.4605147505691163,
+      "calibration_slope_ci": [
+        0.5423272645595183,
+        2.304977043294988
+      ],
+      "calibration_intercept": 0.20787009546581892,
+      "mean_predicted": 0.008532438760401807
+    },
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "position",
+      "group": "DEF",
+      "n": 5099,
+      "players": 187,
+      "positives": 134,
+      "prevalence": 0.026279662678956657,
+      "status": "ok",
+      "pr_auc": 0.04308842526117834,
+      "pr_auc_ci": [
+        0.03165713220916853,
+        0.060318021717433855
+      ],
+      "calibration_slope": 0.8147569509819036,
+      "calibration_slope_ci": [
+        0.45269555238567977,
+        1.1406586633380675
+      ],
+      "calibration_intercept": 0.16771330982808666,
+      "mean_predicted": 0.02233896845267739
+    },
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "position",
+      "group": "MID",
+      "n": 4173,
+      "players": 147,
+      "positives": 100,
+      "prevalence": 0.023963575365444523,
+      "status": "ok",
+      "pr_auc": 0.042605967745526885,
+      "pr_auc_ci": [
+        0.030590122490083155,
+        0.05747099476783882
+      ],
+      "calibration_slope": 1.0087638013783544,
+      "calibration_slope_ci": [
+        0.650248474129582,
+        1.3614315499850245
+      ],
+      "calibration_intercept": 0.1863082968510727,
+      "mean_predicted": 0.019994790117258895
+    },
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "position",
+      "group": "FWD",
+      "n": 4349,
+      "players": 172,
+      "positives": 125,
+      "prevalence": 0.028742239595309266,
+      "status": "ok",
+      "pr_auc": 0.05650598388705313,
+      "pr_auc_ci": [
+        0.037678671161674705,
+        0.08224341795060058
+      ],
+      "calibration_slope": 0.8862079673062518,
+      "calibration_slope_ci": [
+        0.5464785012815394,
+        1.2200401658477225
+      ],
+      "calibration_intercept": 0.25127838385161794,
+      "mean_predicted": 0.022551363974808225
+    },
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "age_band",
+      "group": "\u226423",
+      "n": 5254,
+      "players": 208,
+      "positives": 118,
+      "prevalence": 0.022459078797106968,
+      "status": "ok",
+      "pr_auc": 0.05202675860397789,
+      "pr_auc_ci": [
+        0.030425645235442916,
+        0.0773892607228217
+      ],
+      "calibration_slope": 0.9410504480528903,
+      "calibration_slope_ci": [
+        0.6046996164719346,
+        1.2861037955747139
+      ],
+      "calibration_intercept": 0.26995737273083914,
+      "mean_predicted": 0.0172764499280326
+    },
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "age_band",
+      "group": "24\u201328",
+      "n": 5784,
+      "players": 206,
+      "positives": 154,
+      "prevalence": 0.026625172890733056,
+      "status": "ok",
+      "pr_auc": 0.0514080070522932,
+      "pr_auc_ci": [
+        0.03866482073726693,
+        0.06967219422411496
+      ],
+      "calibration_slope": 1.0859100117898766,
+      "calibration_slope_ci": [
+        0.8204915049706354,
+        1.3435834645689588
+      ],
+      "calibration_intercept": 0.24081736340993304,
+      "mean_predicted": 0.021082369898257
+    },
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "age_band",
+      "group": "\u226529",
+      "n": 4397,
+      "players": 151,
+      "positives": 106,
+      "prevalence": 0.02410734591767114,
+      "status": "ok",
+      "pr_auc": 0.041186119138376186,
+      "pr_auc_ci": [
+        0.02822365999302514,
+        0.05955292123907044
+      ],
+      "calibration_slope": 0.857576258359914,
+      "calibration_slope_ci": [
+        0.5227032256117912,
+        1.2100822314234627
+      ],
+      "calibration_intercept": 0.07912099963202932,
+      "mean_predicted": 0.022330563958137695
+    },
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "usage_band",
+      "group": "bottom half",
+      "n": 7747,
+      "players": 296,
+      "positives": 180,
+      "prevalence": 0.023234800567961792,
+      "status": "ok",
+      "pr_auc": 0.04400133364178584,
+      "pr_auc_ci": [
+        0.03369966590589175,
+        0.06339623134916253
+      ],
+      "calibration_slope": 0.9876835896577392,
+      "calibration_slope_ci": [
+        0.7315309058044035,
+        1.267922656705373
+      ],
+      "calibration_intercept": 0.19021865258196374,
+      "mean_predicted": 0.01931703616099984
+    },
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "usage_band",
+      "group": "top half",
+      "n": 7688,
+      "players": 269,
+      "positives": 198,
+      "prevalence": 0.025754422476586887,
+      "status": "ok",
+      "pr_auc": 0.04895526895635507,
+      "pr_auc_ci": [
+        0.03626910517566958,
+        0.0641574665490552
+      ],
+      "calibration_slope": 0.8991690005801914,
+      "calibration_slope_ci": [
+        0.6660726125330202,
+        1.124085581897964
+      ],
+      "calibration_intercept": 0.21209101202419806,
+      "mean_predicted": 0.020974155306720532
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "position",
+      "group": "GK",
+      "n": 2716,
+      "players": 66,
+      "positives": 21,
+      "prevalence": 0.007731958762886598,
+      "status": "ok",
+      "pr_auc": 0.0328030289202348,
+      "pr_auc_ci": [
+        0.013242123149471166,
+        0.07145121371556527
+      ]
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "position",
+      "group": "DEF",
+      "n": 7833,
+      "players": 224,
+      "positives": 164,
+      "prevalence": 0.020937061151538365,
+      "status": "ok",
+      "pr_auc": 0.039429962439705854,
+      "pr_auc_ci": [
+        0.029474749784051523,
+        0.055926469161142064
+      ]
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "position",
+      "group": "MID",
+      "n": 6323,
+      "players": 170,
+      "positives": 119,
+      "prevalence": 0.018820180294164164,
+      "status": "ok",
+      "pr_auc": 0.04007993164596656,
+      "pr_auc_ci": [
+        0.028647212875540326,
+        0.05333833872139053
+      ]
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "position",
+      "group": "FWD",
+      "n": 6855,
+      "players": 213,
+      "positives": 149,
+      "prevalence": 0.02173595915390226,
+      "status": "ok",
+      "pr_auc": 0.050806798958383526,
+      "pr_auc_ci": [
+        0.03461562939791613,
+        0.07516064859858508
+      ]
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "age_band",
+      "group": "\u226423",
+      "n": 8213,
+      "players": 265,
+      "positives": 143,
+      "prevalence": 0.01741142091805674,
+      "status": "ok",
+      "pr_auc": 0.04828113328353301,
+      "pr_auc_ci": [
+        0.029316050525896142,
+        0.06952646748525382
+      ]
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "age_band",
+      "group": "24\u201328",
+      "n": 8833,
+      "players": 236,
+      "positives": 182,
+      "prevalence": 0.02060455111513642,
+      "status": "ok",
+      "pr_auc": 0.046573400291370276,
+      "pr_auc_ci": [
+        0.036242680800947814,
+        0.06313585726822557
+      ]
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "age_band",
+      "group": "\u226529",
+      "n": 6681,
+      "players": 172,
+      "positives": 128,
+      "prevalence": 0.019158808561592577,
+      "status": "ok",
+      "pr_auc": 0.037825644330898155,
+      "pr_auc_ci": [
+        0.026963011770376688,
+        0.054365376643238324
+      ]
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "usage_band",
+      "group": "bottom half",
+      "n": 12069,
+      "players": 366,
+      "positives": 219,
+      "prevalence": 0.018145662440964456,
+      "status": "ok",
+      "pr_auc": 0.0398690722724125,
+      "pr_auc_ci": [
+        0.03151488356026359,
+        0.055284193941941215
+      ]
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "usage_band",
+      "group": "top half",
+      "n": 11658,
+      "players": 307,
+      "positives": 234,
+      "prevalence": 0.02007205352547607,
+      "status": "ok",
+      "pr_auc": 0.04510861874782349,
+      "pr_auc_ci": [
+        0.033140790700807776,
+        0.05994268843166023
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "position",
+      "group": "GK",
+      "n": 1809,
+      "players": 59,
+      "positives": 73,
+      "prevalence": 0.040353786622443336,
+      "status": "ok",
+      "pr_auc": 0.1115502226391774,
+      "pr_auc_ci": [
+        0.052511570939556676,
+        0.2003543696107347
+      ],
+      "calibration_slope": 1.3160756970412026,
+      "calibration_slope_ci": [
+        0.4861751411762344,
+        2.159941123861064
+      ],
+      "calibration_intercept": 0.22521053045354603,
+      "mean_predicted": 0.0325870556751984,
+      "coverage": 0.9701492537313433,
+      "coverage_ci": [
+        0.9473591221870932,
+        0.9877989403308493
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "position",
+      "group": "DEF",
+      "n": 5071,
+      "players": 187,
+      "positives": 508,
+      "prevalence": 0.10017747978702425,
+      "status": "ok",
+      "pr_auc": 0.15876070210344245,
+      "pr_auc_ci": [
+        0.12073042304043348,
+        0.21319222851948283
+      ],
+      "calibration_slope": 0.8889975450293104,
+      "calibration_slope_ci": [
+        0.5189223469905898,
+        1.2407980315385037
+      ],
+      "calibration_intercept": 0.22355404039510474,
+      "mean_predicted": 0.08215718623395679,
+      "coverage": 0.8661013606783672,
+      "coverage_ci": [
+        0.8274751283088079,
+        0.901394184833557
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "position",
+      "group": "MID",
+      "n": 4155,
+      "players": 147,
+      "positives": 359,
+      "prevalence": 0.08640192539109506,
+      "status": "ok",
+      "pr_auc": 0.1435979172463814,
+      "pr_auc_ci": [
+        0.09943597696035182,
+        0.1997075209491768
+      ],
+      "calibration_slope": 1.0237471339823705,
+      "calibration_slope_ci": [
+        0.5937399592136571,
+        1.4737999310003393
+      ],
+      "calibration_intercept": 0.17323300277318077,
+      "mean_predicted": 0.07392140068688244,
+      "coverage": 0.90661853188929,
+      "coverage_ci": [
+        0.8690335524426434,
+        0.9376950096917742
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "position",
+      "group": "FWD",
+      "n": 4320,
+      "players": 172,
+      "positives": 462,
+      "prevalence": 0.10694444444444444,
+      "status": "ok",
+      "pr_auc": 0.17484720276722415,
+      "pr_auc_ci": [
+        0.12918408521962485,
+        0.22279530795345484
+      ],
+      "calibration_slope": 0.8737216020694388,
+      "calibration_slope_ci": [
+        0.5127113472365764,
+        1.2125176971368181
+      ],
+      "calibration_intercept": 0.2990049738329627,
+      "mean_predicted": 0.08222662770994484,
+      "coverage": 0.8456018518518519,
+      "coverage_ci": [
+        0.8041168694847861,
+        0.8874220367070296
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "age_band",
+      "group": "\u226423",
+      "n": 5226,
+      "players": 208,
+      "positives": 438,
+      "prevalence": 0.08381171067738231,
+      "status": "ok",
+      "pr_auc": 0.15632140539737227,
+      "pr_auc_ci": [
+        0.10164116032704323,
+        0.2166654479381533
+      ],
+      "calibration_slope": 0.914966224619662,
+      "calibration_slope_ci": [
+        0.5444732037761969,
+        1.2858779376873566
+      ],
+      "calibration_intercept": 0.302515648345176,
+      "mean_predicted": 0.0637977070373628,
+      "coverage": 0.945273631840796,
+      "coverage_ci": [
+        0.9250605106785014,
+        0.963197581070946
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "age_band",
+      "group": "24\u201328",
+      "n": 5753,
+      "players": 206,
+      "positives": 572,
+      "prevalence": 0.0994263862332696,
+      "status": "ok",
+      "pr_auc": 0.18122365762553533,
+      "pr_auc_ci": [
+        0.1361220708559693,
+        0.23082090424454496
+      ],
+      "calibration_slope": 1.1792365561672224,
+      "calibration_slope_ci": [
+        0.8715141110655248,
+        1.493316160988795
+      ],
+      "calibration_intercept": 0.27943298977889347,
+      "mean_predicted": 0.07753178730582173,
+      "coverage": 0.8779767078046237,
+      "coverage_ci": [
+        0.8430944162404009,
+        0.9078574227638289
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "age_band",
+      "group": "\u226529",
+      "n": 4376,
+      "players": 151,
+      "positives": 392,
+      "prevalence": 0.08957952468007313,
+      "status": "ok",
+      "pr_auc": 0.14390967864914805,
+      "pr_auc_ci": [
+        0.10625502660541612,
+        0.18928416157053196
+      ],
+      "calibration_slope": 0.8579538179776202,
+      "calibration_slope_ci": [
+        0.52582988324432,
+        1.2145438506901793
+      ],
+      "calibration_intercept": 0.1010029009119801,
+      "mean_predicted": 0.08192055240451016,
+      "coverage": 0.8171846435100548,
+      "coverage_ci": [
+        0.7704579283463552,
+        0.8614620532655286
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "usage_band",
+      "group": "bottom half",
+      "n": 7699,
+      "players": 296,
+      "positives": 677,
+      "prevalence": 0.08793349785686452,
+      "status": "ok",
+      "pr_auc": 0.15574071834249306,
+      "pr_auc_ci": [
+        0.12330342651905288,
+        0.19394225207411794
+      ],
+      "calibration_slope": 1.0161862075591335,
+      "calibration_slope_ci": [
+        0.7460126734606529,
+        1.3222040991356054
+      ],
+      "calibration_intercept": 0.24060201746812984,
+      "mean_predicted": 0.07089437604820095,
+      "coverage": 0.8918041304065463,
+      "coverage_ci": [
+        0.8634994881793792,
+        0.9178140957834041
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "usage_band",
+      "group": "top half",
+      "n": 7656,
+      "players": 269,
+      "positives": 725,
+      "prevalence": 0.0946969696969697,
+      "status": "ok",
+      "pr_auc": 0.16133899126578422,
+      "pr_auc_ci": [
+        0.12438525385569559,
+        0.20737450197592733
+      ],
+      "calibration_slope": 0.9097284177097864,
+      "calibration_slope_ci": [
+        0.663118138949483,
+        1.1727987883127506
+      ],
+      "calibration_intercept": 0.227965235686292,
+      "mean_predicted": 0.07734008953431136,
+      "coverage": 0.8752612330198537,
+      "coverage_ci": [
+        0.8463904972164077,
+        0.9025252795568917
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "position",
+      "group": "GK",
+      "n": 2708,
+      "players": 66,
+      "positives": 84,
+      "prevalence": 0.0310192023633678,
+      "status": "ok",
+      "pr_auc": 0.10046835862260335,
+      "pr_auc_ci": [
+        0.04555844758693155,
+        0.17765299974984433
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "position",
+      "group": "DEF",
+      "n": 7796,
+      "players": 224,
+      "positives": 628,
+      "prevalence": 0.08055413032324268,
+      "status": "ok",
+      "pr_auc": 0.1446973545909816,
+      "pr_auc_ci": [
+        0.11123283958112683,
+        0.19384018507261017
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "position",
+      "group": "MID",
+      "n": 6304,
+      "players": 170,
+      "positives": 450,
+      "prevalence": 0.07138324873096447,
+      "status": "ok",
+      "pr_auc": 0.13564890128036777,
+      "pr_auc_ci": [
+        0.09706214014479166,
+        0.1805593835774167
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "position",
+      "group": "FWD",
+      "n": 6819,
+      "players": 212,
+      "positives": 552,
+      "prevalence": 0.08095028596568411,
+      "status": "ok",
+      "pr_auc": 0.1582651203310593,
+      "pr_auc_ci": [
+        0.12034127499558815,
+        0.19957090337720465
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "age_band",
+      "group": "\u226423",
+      "n": 8182,
+      "players": 265,
+      "positives": 539,
+      "prevalence": 0.065876313859692,
+      "status": "ok",
+      "pr_auc": 0.14729340169661448,
+      "pr_auc_ci": [
+        0.09939065114716801,
+        0.20327172858492906
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "age_band",
+      "group": "24\u201328",
+      "n": 8790,
+      "players": 236,
+      "positives": 685,
+      "prevalence": 0.07792946530147896,
+      "status": "ok",
+      "pr_auc": 0.16254423289317294,
+      "pr_auc_ci": [
+        0.12595708438195624,
+        0.20513903728421665
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "age_band",
+      "group": "\u226529",
+      "n": 6655,
+      "players": 171,
+      "positives": 490,
+      "prevalence": 0.07362885048835462,
+      "status": "ok",
+      "pr_auc": 0.13296475898346544,
+      "pr_auc_ci": [
+        0.10151990296393776,
+        0.17238077987637024
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "usage_band",
+      "group": "bottom half",
+      "n": 12005,
+      "players": 365,
+      "positives": 833,
+      "prevalence": 0.06938775510204082,
+      "status": "ok",
+      "pr_auc": 0.14166460338768536,
+      "pr_auc_ci": [
+        0.11273811488413953,
+        0.17309871668782442
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "usage_band",
+      "group": "top half",
+      "n": 11622,
+      "players": 307,
+      "positives": 881,
+      "prevalence": 0.07580450869041473,
+      "status": "ok",
+      "pr_auc": 0.14816652525831062,
+      "pr_auc_ci": [
+        0.1163209300821354,
+        0.1850750017531461
+      ]
+    }
+  ],
+  "final_run_strata_check": {
+    "champion": "exp-0018",
+    "note": "point estimates of position/league strata also appear in the final-run entry"
+  }
+}

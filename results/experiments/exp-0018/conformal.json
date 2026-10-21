@@ -1,0 +1,1337 @@
+{
+  "experiment": "exp-0018",
+  "results": [
+    {
+      "label": "y28",
+      "origin": 2021,
+      "method": "marginal",
+      "alpha": 0.05,
+      "nominal": 0.95,
+      "q0": 0.8814496622946518,
+      "q1": 0.8814496622946518,
+      "calibration_rows": 33819,
+      "rows": 22200,
+      "coverage": 0.9542792792792792,
+      "coverage_ci": [
+        0.9488978547568703,
+        0.9596708299590018
+      ],
+      "coverage_injured": 0.26342525399129174,
+      "coverage_uninjured": 1.0,
+      "calibration_coverage_injured": 0.2823779193205945,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.9066216216216216,
+          "injury_rate": 0.05042977095443931
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.09337837837837838,
+          "injury_rate": 0.17510853835021709
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2021,
+      "method": "marginal",
+      "alpha": 0.1,
+      "nominal": 0.9,
+      "q0": 0.16695536479944056,
+      "q1": 0.16695536479944056,
+      "calibration_rows": 33819,
+      "rows": 22200,
+      "coverage": 0.9204954954954955,
+      "coverage_ci": [
+        0.9091310856959054,
+        0.9317599639389069
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.9814138891557007,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.9764414414414414,
+          "injury_rate": 0.05729575125709277
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.023558558558558557,
+          "injury_rate": 0.26003824091778205
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2021,
+      "method": "marginal",
+      "alpha": 0.2,
+      "nominal": 0.8,
+      "q0": 0.10832425226519651,
+      "q1": 0.10832425226519651,
+      "calibration_rows": 33819,
+      "rows": 22200,
+      "coverage": 0.8320720720720721,
+      "coverage_ci": [
+        0.8114867564250755,
+        0.8514887206505424
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.8871386034002497,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.8750450450450451,
+          "injury_rate": 0.04910944095542057
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.12495495495495496,
+          "injury_rate": 0.1528478731074261
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2021,
+      "method": "mondrian",
+      "alpha": 0.05,
+      "nominal": 0.95,
+      "q0": 0.1491797335274777,
+      "q1": 0.9693770413623609,
+      "calibration_rows": 33819,
+      "rows": 22200,
+      "coverage": 0.9656306306306306,
+      "coverage_ci": [
+        0.9571858945995952,
+        0.9731826732110218
+      ],
+      "coverage_injured": 0.9296081277213353,
+      "coverage_uninjured": 0.9680145999423686,
+      "calibration_coverage_injured": 0.9507430997876858,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.2398198198198198,
+          "injury_rate": 0.01821938392186326
+        },
+        "high ({1})": {
+          "share": 0.039234234234234236,
+          "injury_rate": 0.23536165327210104
+        },
+        "uncertain ({0,1})": {
+          "share": 0.720945945945946,
+          "injury_rate": 0.06722899094033115
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2021,
+      "method": "mondrian",
+      "alpha": 0.1,
+      "nominal": 0.9,
+      "q0": 0.1209123780818817,
+      "q1": 0.9595446777800721,
+      "calibration_rows": 33819,
+      "rows": 22200,
+      "coverage": 0.9182432432432432,
+      "coverage_ci": [
+        0.9034939244180883,
+        0.9312868927290752
+      ],
+      "coverage_injured": 0.8497822931785196,
+      "coverage_uninjured": 0.9227739890500433,
+      "calibration_coverage_injured": 0.9006369426751593,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.3586936936936937,
+          "injury_rate": 0.025995227929172422
+        },
+        "high ({1})": {
+          "share": 0.08824324324324324,
+          "injury_rate": 0.17917304747320062
+        },
+        "uncertain ({0,1})": {
+          "share": 0.5530630630630631,
+          "injury_rate": 0.06678612151816257
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2021,
+      "method": "mondrian",
+      "alpha": 0.2,
+      "nominal": 0.8,
+      "q0": 0.09602036346389207,
+      "q1": 0.9425019713029839,
+      "calibration_rows": 33819,
+      "rows": 22200,
+      "coverage": 0.8232882882882883,
+      "coverage_ci": [
+        0.8032315326607868,
+        0.8422506327263782
+      ],
+      "coverage_injured": 0.7024673439767779,
+      "coverage_uninjured": 0.8312842186149265,
+      "calibration_coverage_injured": 0.8004246284501062,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.5320720720720721,
+          "injury_rate": 0.034710463934981374
+        },
+        "high ({1})": {
+          "share": 0.18283783783783783,
+          "injury_rate": 0.1345158906134516
+        },
+        "uncertain ({0,1})": {
+          "share": 0.28509009009009006,
+          "injury_rate": 0.06667720018960341
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2022,
+      "method": "marginal",
+      "alpha": 0.05,
+      "nominal": 0.95,
+      "q0": 0.8489661510974537,
+      "q1": 0.8489661510974537,
+      "calibration_rows": 34058,
+      "rows": 21924,
+      "coverage": 0.9494161649334063,
+      "coverage_ci": [
+        0.9427419526074402,
+        0.9557149650000143
+      ],
+      "coverage_injured": 0.10347615198059822,
+      "coverage_uninjured": 1.0,
+      "calibration_coverage_injured": 0.15916955017301038,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.9592683816821748,
+          "injury_rate": 0.052731681803052634
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.040731618317825215,
+          "injury_rate": 0.1433370660694289
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2022,
+      "method": "marginal",
+      "alpha": 0.1,
+      "nominal": 0.9,
+      "q0": 0.15610812101593094,
+      "q1": 0.15610812101593094,
+      "calibration_rows": 34058,
+      "rows": 21924,
+      "coverage": 0.9129264732713008,
+      "coverage_ci": [
+        0.898850369303508,
+        0.9255746698298531
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.9675158311983372,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.9636471446816275,
+          "injury_rate": 0.052634070147204996
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.03635285531837256,
+          "injury_rate": 0.15683814303638646
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2022,
+      "method": "marginal",
+      "alpha": 0.2,
+      "nominal": 0.8,
+      "q0": 0.10538807983276194,
+      "q1": 0.10538807983276194,
+      "calibration_rows": 34058,
+      "rows": 21924,
+      "coverage": 0.8243477467615399,
+      "coverage_ci": [
+        0.8014948359417895,
+        0.8448179978114624
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.873640450524484,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.8653530377668309,
+          "injury_rate": 0.04738562091503268
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.13464696223316913,
+          "injury_rate": 0.11449864498644986
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2022,
+      "method": "mondrian",
+      "alpha": 0.05,
+      "nominal": 0.95,
+      "q0": 0.1487985144667061,
+      "q1": 0.9752425944155253,
+      "calibration_rows": 34058,
+      "rows": 21924,
+      "coverage": 0.9604086845466155,
+      "coverage_ci": [
+        0.949293987129649,
+        0.9702382387601058
+      ],
+      "coverage_injured": 0.9417946645109135,
+      "coverage_uninjured": 0.9615217286218398,
+      "calibration_coverage_injured": 0.9505684626791894,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.21268929027549718,
+          "injury_rate": 0.015440703409822003
+        },
+        "high ({1})": {
+          "share": 0.042328042328042326,
+          "injury_rate": 0.14224137931034483
+        },
+        "uncertain ({0,1})": {
+          "share": 0.7449826673964605,
+          "injury_rate": 0.06324618869772852
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2022,
+      "method": "mondrian",
+      "alpha": 0.1,
+      "nominal": 0.9,
+      "q0": 0.12049342766877608,
+      "q1": 0.9671408201098126,
+      "calibration_rows": 34058,
+      "rows": 21924,
+      "coverage": 0.9165754424375114,
+      "coverage_ci": [
+        0.9013329479038155,
+        0.9303904336803939
+      ],
+      "coverage_injured": 0.8900565885206144,
+      "coverage_uninjured": 0.9181611640160487,
+      "calibration_coverage_injured": 0.9006426099851705,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.31276226965882137,
+          "injury_rate": 0.019833746536386174
+        },
+        "high ({1})": {
+          "share": 0.08839627805145046,
+          "injury_rate": 0.1264189886480908
+        },
+        "uncertain ({0,1})": {
+          "share": 0.5988414522897282,
+          "injury_rate": 0.06519917739355625
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2022,
+      "method": "mondrian",
+      "alpha": 0.2,
+      "nominal": 0.8,
+      "q0": 0.09442571670632757,
+      "q1": 0.950636499890844,
+      "calibration_rows": 34058,
+      "rows": 21924,
+      "coverage": 0.8229337712096333,
+      "coverage_ci": [
+        0.8015934165771508,
+        0.8426933770382156
+      ],
+      "coverage_injured": 0.7857720291026677,
+      "coverage_uninjured": 0.8251558950065259,
+      "calibration_coverage_injured": 0.800790904597133,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.48207443897099067,
+          "injury_rate": 0.02507332765635349
+        },
+        "high ({1})": {
+          "share": 0.18632548804962598,
+          "injury_rate": 0.11456548347613218
+        },
+        "uncertain ({0,1})": {
+          "share": 0.3316000729793833,
+          "injury_rate": 0.06932599724896836
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2023,
+      "method": "marginal",
+      "alpha": 0.05,
+      "nominal": 0.95,
+      "q0": 0.8645060956470145,
+      "q1": 0.8645060956470145,
+      "calibration_rows": 33681,
+      "rows": 22234,
+      "coverage": 0.9430152019429702,
+      "coverage_ci": [
+        0.9364276462514901,
+        0.9496643703349175
+      ],
+      "coverage_injured": 0.08651766402307137,
+      "coverage_uninjured": 1.0,
+      "calibration_coverage_injured": 0.12434963579604578,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.971305208239633,
+          "injury_rate": 0.05866827190220411
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.028694791760367006,
+          "injury_rate": 0.18808777429467086
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2023,
+      "method": "marginal",
+      "alpha": 0.1,
+      "nominal": 0.9,
+      "q0": 0.1311196037172905,
+      "q1": 0.1311196037172905,
+      "calibration_rows": 33681,
+      "rows": 22234,
+      "coverage": 0.9097328415939552,
+      "coverage_ci": [
+        0.8963214925085997,
+        0.9232286150224506
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.9702595097615964,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.9658630925609427,
+          "injury_rate": 0.05811408614668219
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.0341369074390573,
+          "injury_rate": 0.1831357048748353
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2023,
+      "method": "marginal",
+      "alpha": 0.2,
+      "nominal": 0.8,
+      "q0": 0.09557024774738666,
+      "q1": 0.09557024774738666,
+      "calibration_rows": 33681,
+      "rows": 22234,
+      "coverage": 0.8373661959161645,
+      "coverage_ci": [
+        0.8165239153700273,
+        0.8578427819212416
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.8930781407396747,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.8804083835567149,
+          "injury_rate": 0.04888888888888889
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.11959161644328506,
+          "injury_rate": 0.1617149304249718
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2023,
+      "method": "mondrian",
+      "alpha": 0.05,
+      "nominal": 0.95,
+      "q0": 0.1283625450339429,
+      "q1": 0.9722270379565339,
+      "calibration_rows": 33681,
+      "rows": 22234,
+      "coverage": 0.9667626158136188,
+      "coverage_ci": [
+        0.9570970208723992,
+        0.9761529628690034
+      ],
+      "coverage_injured": 0.9646719538572458,
+      "coverage_uninjured": 0.9669017124766154,
+      "calibration_coverage_injured": 0.9505723204994797,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.18683097958082218,
+          "injury_rate": 0.011795859412614348
+        },
+        "high ({1})": {
+          "share": 0.038184762076099665,
+          "injury_rate": 0.1872791519434629
+        },
+        "uncertain ({0,1})": {
+          "share": 0.7749842583430782,
+          "injury_rate": 0.06842319076083803
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2023,
+      "method": "mondrian",
+      "alpha": 0.1,
+      "nominal": 0.9,
+      "q0": 0.10773736002599645,
+      "q1": 0.9639180336341209,
+      "calibration_rows": 33681,
+      "rows": 22234,
+      "coverage": 0.9326257083745615,
+      "coverage_ci": [
+        0.9193013638571307,
+        0.9451753594499949
+      ],
+      "coverage_injured": 0.8997837058399423,
+      "coverage_uninjured": 0.934810764138725,
+      "calibration_coverage_injured": 0.9006243496357961,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.30970585589637495,
+          "injury_rate": 0.0201858844031368
+        },
+        "high ({1})": {
+          "share": 0.07502023927318521,
+          "injury_rate": 0.18525179856115107
+        },
+        "uncertain ({0,1})": {
+          "share": 0.6152739048304399,
+          "injury_rate": 0.06864035087719299
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y28",
+      "origin": 2023,
+      "method": "mondrian",
+      "alpha": 0.2,
+      "nominal": 0.8,
+      "q0": 0.08737050358149807,
+      "q1": 0.9511688819576,
+      "calibration_rows": 33681,
+      "rows": 22234,
+      "coverage": 0.850769092381038,
+      "coverage_ci": [
+        0.8319086851154267,
+        0.8695786145239767
+      ],
+      "coverage_injured": 0.8103821196827685,
+      "coverage_uninjured": 0.8534561327768984,
+      "calibration_coverage_injured": 0.8007284079084287,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.4744535396239993,
+          "injury_rate": 0.024931273106455588
+        },
+        "high ({1})": {
+          "share": 0.16110461455428624,
+          "injury_rate": 0.1471245114461195
+        },
+        "uncertain ({0,1})": {
+          "share": 0.3644418458217145,
+          "injury_rate": 0.07367641614216956
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2021,
+      "method": "marginal",
+      "alpha": 0.05,
+      "nominal": 0.95,
+      "q0": 0.048057709438361275,
+      "q1": 0.048057709438361275,
+      "calibration_rows": 36182,
+      "rows": 22280,
+      "coverage": 0.9625673249551167,
+      "coverage_ci": [
+        0.954480635700816,
+        0.9709157336805265
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.9784651884296013,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.9771095152603232,
+          "injury_rate": 0.014882866329811667
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.02289048473967684,
+          "injury_rate": 0.07450980392156863
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2021,
+      "method": "marginal",
+      "alpha": 0.1,
+      "nominal": 0.9,
+      "q0": 0.03586618060660136,
+      "q1": 0.03586618060660136,
+      "calibration_rows": 36182,
+      "rows": 22280,
+      "coverage": 0.9187612208258528,
+      "coverage_ci": [
+        0.9038281243856277,
+        0.9330542106116076
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.933935578063692,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.931149012567325,
+          "injury_rate": 0.013303769401330377
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.06885098743267505,
+          "injury_rate": 0.0560625814863103
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2021,
+      "method": "marginal",
+      "alpha": 0.2,
+      "nominal": 0.8,
+      "q0": 0.027040599755754985,
+      "q1": 0.027040599755754985,
+      "calibration_rows": 36182,
+      "rows": 22280,
+      "coverage": 0.8238779174147217,
+      "coverage_ci": [
+        0.8014504380903049,
+        0.8458485308276176
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.8374851720047449,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.833886894075404,
+          "injury_rate": 0.012002798858926746
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.16611310592459605,
+          "injury_rate": 0.037557416914347476
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2021,
+      "method": "mondrian",
+      "alpha": 0.05,
+      "nominal": 0.95,
+      "q0": 0.04238878720185145,
+      "q1": 0.9924849424453431,
+      "calibration_rows": 36182,
+      "rows": 22280,
+      "coverage": 0.9634649910233393,
+      "coverage_ci": [
+        0.9530457336093064,
+        0.9724368421715541
+      ],
+      "coverage_injured": 0.9447513812154696,
+      "coverage_uninjured": 0.9637740669769139,
+      "calibration_coverage_injured": 0.9521604938271605,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.2183572710951526,
+          "injury_rate": 0.0041109969167523125
+        },
+        "high ({1})": {
+          "share": 0.03792639138240574,
+          "injury_rate": 0.06035502958579882
+        },
+        "uncertain ({0,1})": {
+          "share": 0.7437163375224417,
+          "injury_rate": 0.01756185878092939
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2021,
+      "method": "mondrian",
+      "alpha": 0.1,
+      "nominal": 0.9,
+      "q0": 0.03379688218613663,
+      "q1": 0.9898983281034087,
+      "calibration_rows": 36182,
+      "rows": 22280,
+      "coverage": 0.9198833034111311,
+      "coverage_ci": [
+        0.9045223458449314,
+        0.9341055950808764
+      ],
+      "coverage_injured": 0.8839779005524862,
+      "coverage_uninjured": 0.9204763208321928,
+      "calibration_coverage_injured": 0.9027777777777778,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.3381508078994614,
+          "injury_rate": 0.005574727900185824
+        },
+        "high ({1})": {
+          "share": 0.08245062836624775,
+          "injury_rate": 0.05117038649972782
+        },
+        "uncertain ({0,1})": {
+          "share": 0.5793985637342909,
+          "injury_rate": 0.01750716554341932
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2021,
+      "method": "mondrian",
+      "alpha": 0.2,
+      "nominal": 0.8,
+      "q0": 0.02627669299911994,
+      "q1": 0.9857226298419142,
+      "calibration_rows": 36182,
+      "rows": 22280,
+      "coverage": 0.823608617594255,
+      "coverage_ci": [
+        0.8011671926975508,
+        0.8457508930055464
+      ],
+      "coverage_injured": 0.7541436464088398,
+      "coverage_uninjured": 0.8247559083858016,
+      "calibration_coverage_injured": 0.8024691358024691,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.5074506283662478,
+          "injury_rate": 0.007871926410755351
+        },
+        "high ({1})": {
+          "share": 0.17885996409335728,
+          "injury_rate": 0.03613550815558344
+        },
+        "uncertain ({0,1})": {
+          "share": 0.313689407540395,
+          "injury_rate": 0.018457576191157534
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2022,
+      "method": "marginal",
+      "alpha": 0.05,
+      "nominal": 0.95,
+      "q0": 0.046342724786621624,
+      "q1": 0.046342724786621624,
+      "calibration_rows": 36368,
+      "rows": 22027,
+      "coverage": 0.9584146729014391,
+      "coverage_ci": [
+        0.9477265251990354,
+        0.9679243368349753
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.9728123127966453,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.9717165297135334,
+          "injury_rate": 0.01368903008783405
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.02828347028646661,
+          "injury_rate": 0.052969502407704656
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2022,
+      "method": "marginal",
+      "alpha": 0.1,
+      "nominal": 0.9,
+      "q0": 0.03421503493928016,
+      "q1": 0.03421503493928016,
+      "calibration_rows": 36368,
+      "rows": 22027,
+      "coverage": 0.9146502020247878,
+      "coverage_ci": [
+        0.8988734924102448,
+        0.9285287158801648
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.9283903967559098,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.9268170881191266,
+          "injury_rate": 0.013127602253245163
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.07318291188087347,
+          "injury_rate": 0.03598014888337469
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2022,
+      "method": "marginal",
+      "alpha": 0.2,
+      "nominal": 0.8,
+      "q0": 0.025430604401805324,
+      "q1": 0.025430604401805324,
+      "calibration_rows": 36368,
+      "rows": 22027,
+      "coverage": 0.8169519226403958,
+      "coverage_ci": [
+        0.7941626190480238,
+        0.8392240095903246
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.8292244597023178,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.826304081354701,
+          "injury_rate": 0.011318059447283117
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.17369591864529896,
+          "injury_rate": 0.03136434918975431
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2022,
+      "method": "mondrian",
+      "alpha": 0.05,
+      "nominal": 0.95,
+      "q0": 0.04131396943966129,
+      "q1": 0.9941250416539249,
+      "calibration_rows": 36368,
+      "rows": 22027,
+      "coverage": 0.9616833885685749,
+      "coverage_ci": [
+        0.9506324478001947,
+        0.9719494364834472
+      ],
+      "coverage_injured": 0.9478527607361963,
+      "coverage_uninjured": 0.9618911570895351,
+      "calibration_coverage_injured": 0.9533582089552238,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.20216098424660645,
+          "injury_rate": 0.0038176510217830676
+        },
+        "high ({1})": {
+          "share": 0.03922458800562945,
+          "injury_rate": 0.04282407407407408
+        },
+        "uncertain ({0,1})": {
+          "share": 0.7586144277477641,
+          "injury_rate": 0.016277678037103532
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2022,
+      "method": "mondrian",
+      "alpha": 0.1,
+      "nominal": 0.9,
+      "q0": 0.03255417558491028,
+      "q1": 0.9914906607837353,
+      "calibration_rows": 36368,
+      "rows": 22027,
+      "coverage": 0.9136968266218731,
+      "coverage_ci": [
+        0.8974003720576,
+        0.9285421081121735
+      ],
+      "coverage_injured": 0.8680981595092024,
+      "coverage_uninjured": 0.914381825722317,
+      "calibration_coverage_injured": 0.9029850746268657,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.3299586870658737,
+          "injury_rate": 0.0059163456246560265
+        },
+        "high ({1})": {
+          "share": 0.08707495346620057,
+          "injury_rate": 0.03128258602711158
+        },
+        "uncertain ({0,1})": {
+          "share": 0.5829663594679257,
+          "injury_rate": 0.017366248734522232
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2022,
+      "method": "mondrian",
+      "alpha": 0.2,
+      "nominal": 0.8,
+      "q0": 0.024791605706451617,
+      "q1": 0.987773554902461,
+      "calibration_rows": 36368,
+      "rows": 22027,
+      "coverage": 0.8161801425523222,
+      "coverage_ci": [
+        0.7929490522394336,
+        0.8382192725034153
+      ],
+      "coverage_injured": 0.7883435582822086,
+      "coverage_uninjured": 0.8165983134417769,
+      "calibration_coverage_injured": 0.8022388059701493,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.4800926136105689,
+          "injury_rate": 0.006524822695035461
+        },
+        "high ({1})": {
+          "share": 0.18640759068416035,
+          "injury_rate": 0.030686799805163176
+        },
+        "uncertain ({0,1})": {
+          "share": 0.33349979570527083,
+          "injury_rate": 0.017832834195480533
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2023,
+      "method": "marginal",
+      "alpha": 0.05,
+      "nominal": 0.95,
+      "q0": 0.03968623847717555,
+      "q1": 0.03968623847717555,
+      "calibration_rows": 36003,
+      "rows": 22346,
+      "coverage": 0.9577105522241117,
+      "coverage_ci": [
+        0.9476880751969399,
+        0.9670738241083221
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.9733921586464114,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.972433545153495,
+          "injury_rate": 0.015140358950759318
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.027566454846504967,
+          "injury_rate": 0.05032467532467533
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2023,
+      "method": "marginal",
+      "alpha": 0.1,
+      "nominal": 0.9,
+      "q0": 0.03085560164375446,
+      "q1": 0.03085560164375446,
+      "calibration_rows": 36003,
+      "rows": 22346,
+      "coverage": 0.9196276738566186,
+      "coverage_ci": [
+        0.9048305609849395,
+        0.9337420418826008
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.9346857090876012,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.932650138727289,
+          "injury_rate": 0.013962861666906579
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.067349861272711,
+          "injury_rate": 0.04584717607973422
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2023,
+      "method": "marginal",
+      "alpha": 0.2,
+      "nominal": 0.8,
+      "q0": 0.023707824657224146,
+      "q1": 0.023707824657224146,
+      "calibration_rows": 36003,
+      "rows": 22346,
+      "coverage": 0.8365255526716191,
+      "coverage_ci": [
+        0.8153693197937705,
+        0.8584665442235786
+      ],
+      "coverage_injured": 0.0,
+      "coverage_uninjured": 0.8502228690985172,
+      "calibration_coverage_injured": 0.0,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.8462812136400251,
+          "injury_rate": 0.011527682301306118
+        },
+        "high ({1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "uncertain ({0,1})": {
+          "share": 0.0,
+          "injury_rate": null
+        },
+        "empty": {
+          "share": 0.15371878635997493,
+          "injury_rate": 0.0413391557496361
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2023,
+      "method": "mondrian",
+      "alpha": 0.05,
+      "nominal": 0.95,
+      "q0": 0.03617865150922537,
+      "q1": 0.9932976749344726,
+      "calibration_rows": 36003,
+      "rows": 22346,
+      "coverage": 0.9628121364002507,
+      "coverage_ci": [
+        0.9520193421888142,
+        0.9733684170486326
+      ],
+      "coverage_injured": 0.9694444444444444,
+      "coverage_uninjured": 0.9627035386154826,
+      "calibration_coverage_injured": 0.952755905511811,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.20903069900653362,
+          "injury_rate": 0.002354956112181546
+        },
+        "high ({1})": {
+          "share": 0.03870938870491363,
+          "injury_rate": 0.05202312138728324
+        },
+        "uncertain ({0,1})": {
+          "share": 0.7522599122885527,
+          "injury_rate": 0.018084473527662105
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2023,
+      "method": "mondrian",
+      "alpha": 0.1,
+      "nominal": 0.9,
+      "q0": 0.02951792836084846,
+      "q1": 0.9912881540088928,
+      "calibration_rows": 36003,
+      "rows": 22346,
+      "coverage": 0.9248635102479191,
+      "coverage_ci": [
+        0.910129188997015,
+        0.9388878290910396
+      ],
+      "coverage_injured": 0.9111111111111111,
+      "coverage_uninjured": 0.925088692804512,
+      "calibration_coverage_injured": 0.9035433070866141,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.3292311823145082,
+          "injury_rate": 0.00434959902134022
+        },
+        "high ({1})": {
+          "share": 0.0772845251946657,
+          "injury_rate": 0.04632310364794441
+        },
+        "uncertain ({0,1})": {
+          "share": 0.5934842924908261,
+          "injury_rate": 0.01870004524204494
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    },
+    {
+      "label": "y7",
+      "origin": 2023,
+      "method": "mondrian",
+      "alpha": 0.2,
+      "nominal": 0.8,
+      "q0": 0.023186663185735385,
+      "q1": 0.988214974980344,
+      "calibration_rows": 36003,
+      "rows": 22346,
+      "coverage": 0.8391210954980757,
+      "coverage_ci": [
+        0.8191307320294731,
+        0.8601951072116597
+      ],
+      "coverage_injured": 0.825,
+      "coverage_uninjured": 0.8393523151096152,
+      "calibration_coverage_injured": 0.8031496062992126,
+      "tiers": {
+        "low ({0})": {
+          "share": 0.4778931352367314,
+          "injury_rate": 0.005899428785466804
+        },
+        "high ({1})": {
+          "share": 0.16472746800322205,
+          "injury_rate": 0.04047813094267862
+        },
+        "uncertain ({0,1})": {
+          "share": 0.35737939676004654,
+          "injury_rate": 0.018532431755572253
+        },
+        "empty": {
+          "share": 0.0,
+          "injury_rate": null
+        }
+      }
+    }
+  ]
+}

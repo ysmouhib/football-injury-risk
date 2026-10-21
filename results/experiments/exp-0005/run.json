@@ -1,0 +1,101 @@
+{
+  "id": "exp-0005",
+  "config_path": "configs/exp-0005.yaml",
+  "config_sha256": "507c04481afc79b1bb699c0c11e3f1a07a0ce4e69976369f3b97e6acf6046560",
+  "data_version": "panel_v1",
+  "panel_sha256": "f015e0aad7418a6944a8e9aae4e3dc651f649b0962f38239e65457c0c8e382eb",
+  "seed": 20261020,
+  "leakage_tests": "pass",
+  "git": {
+    "commit": "a8266324f0d491571c28878fd8d1a078aca7ecd2",
+    "dirty": false
+  },
+  "environment": {
+    "python": "3.12.10",
+    "numpy": "2.5.4",
+    "pandas": "3.0.6",
+    "scikit-learn": "1.9.1",
+    "lightgbm": "4.7.0",
+    "pyarrow": "26.0.0"
+  },
+  "splits": [
+    {
+      "split": "origin-2021-y7",
+      "label": "y7",
+      "origin": 2021,
+      "train_cutoff_t": "2021-06-20",
+      "first_eval_t": "2021-07-04",
+      "train_rows": 491040,
+      "train_players": 4366,
+      "train_positives": 8493,
+      "eval_rows": 22280,
+      "eval_players": 649,
+      "fit_seconds": 6.56
+    },
+    {
+      "split": "origin-2022-y7",
+      "label": "y7",
+      "origin": 2022,
+      "train_cutoff_t": "2022-06-19",
+      "first_eval_t": "2022-07-03",
+      "train_rows": 567056,
+      "train_players": 4773,
+      "train_positives": 9657,
+      "eval_rows": 22027,
+      "eval_players": 637,
+      "fit_seconds": 7.41
+    },
+    {
+      "split": "origin-2023-y7",
+      "label": "y7",
+      "origin": 2023,
+      "train_cutoff_t": "2023-06-18",
+      "first_eval_t": "2023-07-02",
+      "train_rows": 643978,
+      "train_players": 5221,
+      "train_positives": 10787,
+      "eval_rows": 22346,
+      "eval_players": 655,
+      "fit_seconds": 8.29
+    },
+    {
+      "split": "origin-2021-y28",
+      "label": "y28",
+      "origin": 2021,
+      "train_cutoff_t": "2021-05-30",
+      "first_eval_t": "2021-07-04",
+      "train_rows": 485492,
+      "train_players": 4366,
+      "train_positives": 31914,
+      "eval_rows": 22200,
+      "eval_players": 649,
+      "fit_seconds": 6.34
+    },
+    {
+      "split": "origin-2022-y28",
+      "label": "y28",
+      "origin": 2022,
+      "train_cutoff_t": "2022-05-29",
+      "first_eval_t": "2022-07-03",
+      "train_rows": 561210,
+      "train_players": 4769,
+      "train_positives": 36323,
+      "eval_rows": 21924,
+      "eval_players": 637,
+      "fit_seconds": 7.37
+    },
+    {
+      "split": "origin-2023-y28",
+      "label": "y28",
+      "origin": 2023,
+      "train_cutoff_t": "2023-05-28",
+      "first_eval_t": "2023-07-02",
+      "train_rows": 637794,
+      "train_players": 5219,
+      "train_positives": 40629,
+      "eval_rows": 22234,
+      "eval_players": 655,
+      "fit_seconds": 8.19
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "created": "2026-10-21T12:21:25",
+  "champion": "exp-0018",
+  "panel_sha256": "7bb6cc0b81eb7f340bc5f2b9af7f2b07289804264005e3ec497818765da477b7",
+  "git": {
+    "commit": "75437a67cfd5892224b106e02fe854b24df6823d",
+    "dirty": false
+  },
+  "final_run_commit": "90209ca3ba9f48bd85bf00bdd712a8fa5333a105",
+  "labels": {
+    "y7": {
+      "file": "exp-0018_y7.joblib",
+      "file_sha256": "10222b55c97093318bb1f26f5db67288fa9a124eaea2d8179447070d16922f9b",
+      "fingerprint": "38e00fc1ba3fb40741a9c1b590d94933669cd1155820b6afa2bb55821685b36e",
+      "record": {
+        "train_rows": 932763,
+        "inner_rows": 837486,
+        "half_a_rows": 47639,
+        "half_b_rows": 45687,
+        "method": "platt",
+        "a": -4.137957226124922,
+        "b": 0.9460885241456899
+      },
+      "reproduces_final_run": {
+        "rows": true,
+        "keys": true,
+        "p": true,
+        "p_raw": true,
+        "y": true,
+        "platt_a": true,
+        "platt_b": true
+      }
+    },
+    "y28": {
+      "file": "exp-0018_y28.joblib",
+      "file_sha256": "736467c74b9a5ee2fe6c60a2fcc0510e9c75bd26457ca77d196bb2ebab727db6",
+      "fingerprint": "aa01e16a0c4d6ad79c4ef7361ba6511b42947815a39a759d959f682f428e680f",
+      "record": {
+        "train_rows": 924546,
+        "inner_rows": 829503,
+        "half_a_rows": 44544,
+        "half_b_rows": 42774,
+        "method": "platt",
+        "a": -2.7458393131851517,
+        "b": 0.9364710172481375
+      },
+      "reproduces_final_run": {
+        "rows": true,
+        "keys": true,
+        "p": true,
+        "p_raw": true,
+        "y": true,
+        "platt_a": true,
+        "platt_b": true
+      }
+    }
+  },
+  "model_hash": "688b63775081744a2c7cb15e122a1d5594d7a69f6c53aba95ab3d28765931f88"
+}

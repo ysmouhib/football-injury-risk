@@ -1,0 +1,447 @@
+{
+  "id": "exp-0027",
+  "config_path": "configs/exp-0027.yaml",
+  "git": {
+    "commit": "16d4004e0e625604d7c3370b2a5def40a9f7035b",
+    "dirty": false
+  },
+  "panel_sha256": "7bb6cc0b81eb7f340bc5f2b9af7f2b07289804264005e3ec497818765da477b7",
+  "final_run_commit": "90209ca3ba9f48bd85bf00bdd712a8fa5333a105",
+  "seed": 20261020,
+  "n_resamples": 1000,
+  "min_cell": 500,
+  "usage_cut_minutes": 1945.8424304216858,
+  "conformal": {
+    "alpha": 0.1,
+    "q0": 0.11558624454234363,
+    "q1": 0.9604554503479226,
+    "label": "y28"
+  },
+  "unknown": {
+    "y7/in_season/league": 0,
+    "y7/all_weeks/league": 0,
+    "y28/in_season/league": 0,
+    "y28/all_weeks/league": 0
+  },
+  "cells": [
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "league",
+      "group": "GB1",
+      "n": 2880,
+      "players": 109,
+      "positives": 80,
+      "prevalence": 0.027777777777777776,
+      "status": "ok",
+      "pr_auc": 0.05790711515059315,
+      "pr_auc_ci": [
+        0.030260513550641365,
+        0.10128089763005008
+      ],
+      "calibration_slope": 0.8845903130354004,
+      "calibration_slope_ci": [
+        0.34803057700736256,
+        1.3571491400034967
+      ],
+      "calibration_intercept": 0.3444559408464329,
+      "mean_predicted": 0.01989079420626942
+    },
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "league",
+      "group": "ES1",
+      "n": 3172,
+      "players": 108,
+      "positives": 50,
+      "prevalence": 0.015762925598991173,
+      "status": "ok",
+      "pr_auc": 0.05867169790343223,
+      "pr_auc_ci": [
+        0.025963953799329125,
+        0.10100370569059118
+      ],
+      "calibration_slope": 1.4093134574879425,
+      "calibration_slope_ci": [
+        1.0305056957968661,
+        1.9488781910045283
+      ],
+      "calibration_intercept": -0.2696737396569754,
+      "mean_predicted": 0.02049396183347462
+    },
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "league",
+      "group": "IT1",
+      "n": 3567,
+      "players": 144,
+      "positives": 99,
+      "prevalence": 0.027754415475189236,
+      "status": "ok",
+      "pr_auc": 0.0418425273249902,
+      "pr_auc_ci": [
+        0.03160442094477239,
+        0.0544899292815501
+      ],
+      "calibration_slope": 0.7755551335996038,
+      "calibration_slope_ci": [
+        0.476637818442848,
+        1.0690444759480813
+      ],
+      "calibration_intercept": 0.24431518078662964,
+      "mean_predicted": 0.02191668362983366
+    },
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "league",
+      "group": "FR1",
+      "n": 2908,
+      "players": 111,
+      "positives": 62,
+      "prevalence": 0.021320495185694635,
+      "status": "ok",
+      "pr_auc": 0.038919520655824116,
+      "pr_auc_ci": [
+        0.024341373696981528,
+        0.06629142629706497
+      ],
+      "calibration_slope": 0.8743335453562536,
+      "calibration_slope_ci": [
+        0.32724900517749617,
+        1.332828429634549
+      ],
+      "calibration_intercept": 0.36672791689550405,
+      "mean_predicted": 0.014905774698825616
+    },
+    {
+      "label": "y7",
+      "population": "in_season",
+      "dimension": "league",
+      "group": "L1",
+      "n": 2908,
+      "players": 104,
+      "positives": 87,
+      "prevalence": 0.029917469050894086,
+      "status": "ok",
+      "pr_auc": 0.05248429864072215,
+      "pr_auc_ci": [
+        0.03572507927182298,
+        0.08886453193081699
+      ],
+      "calibration_slope": 1.0004890747076176,
+      "calibration_slope_ci": [
+        0.6185955786352592,
+        1.4277267816456427
+      ],
+      "calibration_intercept": 0.2691671726576371,
+      "mean_predicted": 0.023068517041160325
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "league",
+      "group": "GB1",
+      "n": 4499,
+      "players": 141,
+      "positives": 90,
+      "prevalence": 0.02000444543231829,
+      "status": "ok",
+      "pr_auc": 0.05276748373529415,
+      "pr_auc_ci": [
+        0.029247425071840676,
+        0.09142013735862287
+      ]
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "league",
+      "group": "ES1",
+      "n": 4765,
+      "players": 126,
+      "positives": 60,
+      "prevalence": 0.012591815320041973,
+      "status": "ok",
+      "pr_auc": 0.052296160881937295,
+      "pr_auc_ci": [
+        0.02458043136381894,
+        0.08761237717400847
+      ]
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "league",
+      "group": "IT1",
+      "n": 5577,
+      "players": 199,
+      "positives": 124,
+      "prevalence": 0.022234176080329928,
+      "status": "ok",
+      "pr_auc": 0.039416370399253935,
+      "pr_auc_ci": [
+        0.029959790364924188,
+        0.051204902491450884
+      ]
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "league",
+      "group": "FR1",
+      "n": 4454,
+      "players": 129,
+      "positives": 77,
+      "prevalence": 0.01728783116299955,
+      "status": "ok",
+      "pr_auc": 0.03617271186865653,
+      "pr_auc_ci": [
+        0.023945340868320116,
+        0.0589466698332046
+      ]
+    },
+    {
+      "label": "y7",
+      "population": "all_weeks",
+      "dimension": "league",
+      "group": "L1",
+      "n": 4432,
+      "players": 118,
+      "positives": 102,
+      "prevalence": 0.023014440433212997,
+      "status": "ok",
+      "pr_auc": 0.047860906323904634,
+      "pr_auc_ci": [
+        0.03276653590056965,
+        0.08046090173068104
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "league",
+      "group": "GB1",
+      "n": 2857,
+      "players": 109,
+      "positives": 298,
+      "prevalence": 0.10430521526076304,
+      "status": "ok",
+      "pr_auc": 0.17373283828536423,
+      "pr_auc_ci": [
+        0.1092707105806353,
+        0.25483983476430055
+      ],
+      "calibration_slope": 0.8331697204660884,
+      "calibration_slope_ci": [
+        0.29422441728785775,
+        1.3384544466531636
+      ],
+      "calibration_intercept": 0.3938238836409622,
+      "mean_predicted": 0.07344637383107006,
+      "coverage": 0.9170458522926146,
+      "coverage_ci": [
+        0.8811812436071147,
+        0.9497460533647001
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "league",
+      "group": "ES1",
+      "n": 3161,
+      "players": 108,
+      "positives": 179,
+      "prevalence": 0.056627649478013284,
+      "status": "ok",
+      "pr_auc": 0.158048524152505,
+      "pr_auc_ci": [
+        0.08984481365590849,
+        0.22624341841243004
+      ],
+      "calibration_slope": 1.4571120185748714,
+      "calibration_slope_ci": [
+        1.0530224375941428,
+        2.029166438291539
+      ],
+      "calibration_intercept": -0.3165296301760433,
+      "mean_predicted": 0.07548494387550385,
+      "coverage": 0.8772540335336919,
+      "coverage_ci": [
+        0.8291797869939495,
+        0.9201869536615823
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "league",
+      "group": "IT1",
+      "n": 3524,
+      "players": 144,
+      "positives": 374,
+      "prevalence": 0.1061293984108967,
+      "status": "ok",
+      "pr_auc": 0.16393479563104907,
+      "pr_auc_ci": [
+        0.11895717930994558,
+        0.21224740857387164
+      ],
+      "calibration_slope": 0.86513096473971,
+      "calibration_slope_ci": [
+        0.5390740352163991,
+        1.2040383459532698
+      ],
+      "calibration_intercept": 0.3172148197437195,
+      "mean_predicted": 0.08029317131808363,
+      "coverage": 0.8305902383654937,
+      "coverage_ci": [
+        0.7832047509212864,
+        0.878573585810163
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "league",
+      "group": "FR1",
+      "n": 2905,
+      "players": 111,
+      "positives": 231,
+      "prevalence": 0.07951807228915662,
+      "status": "ok",
+      "pr_auc": 0.1474720705082261,
+      "pr_auc_ci": [
+        0.0912050995377967,
+        0.2352005038309827
+      ],
+      "calibration_slope": 0.9331256614051683,
+      "calibration_slope_ci": [
+        0.32777774415385436,
+        1.5133902014855682
+      ],
+      "calibration_intercept": 0.3917219644864152,
+      "mean_predicted": 0.055611664865532616,
+      "coverage": 0.944578313253012,
+      "coverage_ci": [
+        0.9128217248041763,
+        0.9718648809925527
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "in_season",
+      "dimension": "league",
+      "group": "L1",
+      "n": 2908,
+      "players": 104,
+      "positives": 320,
+      "prevalence": 0.11004126547455295,
+      "status": "ok",
+      "pr_auc": 0.16419994570357282,
+      "pr_auc_ci": [
+        0.11966535416133062,
+        0.24387217738791894
+      ],
+      "calibration_slope": 0.9568808198898258,
+      "calibration_slope_ci": [
+        0.5749378994883367,
+        1.4065882137583945
+      ],
+      "calibration_intercept": 0.3037173249079949,
+      "mean_predicted": 0.08424425958894542,
+      "coverage": 0.8607290233837689,
+      "coverage_ci": [
+        0.8100293654641166,
+        0.9076258858462858
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "league",
+      "group": "GB1",
+      "n": 4473,
+      "players": 141,
+      "positives": 335,
+      "prevalence": 0.07489380728817349,
+      "status": "ok",
+      "pr_auc": 0.15726837441642452,
+      "pr_auc_ci": [
+        0.09929830085136479,
+        0.23679468320208802
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "league",
+      "group": "ES1",
+      "n": 4753,
+      "players": 126,
+      "positives": 231,
+      "prevalence": 0.048600883652430045,
+      "status": "ok",
+      "pr_auc": 0.1457364648061071,
+      "pr_auc_ci": [
+        0.09055017553625486,
+        0.19740488016110425
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "league",
+      "group": "IT1",
+      "n": 5521,
+      "players": 198,
+      "positives": 467,
+      "prevalence": 0.0845861257018656,
+      "status": "ok",
+      "pr_auc": 0.150451868177497,
+      "pr_auc_ci": [
+        0.11324507362786258,
+        0.1915729173804016
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "league",
+      "group": "FR1",
+      "n": 4451,
+      "players": 129,
+      "positives": 298,
+      "prevalence": 0.06695124691080656,
+      "status": "ok",
+      "pr_auc": 0.13864846964181493,
+      "pr_auc_ci": [
+        0.09142892236820829,
+        0.21618002926350072
+      ]
+    },
+    {
+      "label": "y28",
+      "population": "all_weeks",
+      "dimension": "league",
+      "group": "L1",
+      "n": 4429,
+      "players": 118,
+      "positives": 383,
+      "prevalence": 0.08647550237073831,
+      "status": "ok",
+      "pr_auc": 0.14839295818641093,
+      "pr_auc_ci": [
+        0.10843004289740088,
+        0.218693039121254
+      ]
+    }
+  ],
+  "final_run_strata_check": {
+    "champion": "exp-0018",
+    "note": "point estimates of position/league strata also appear in the final-run entry"
+  }
+}
