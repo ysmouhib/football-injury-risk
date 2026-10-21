@@ -480,11 +480,11 @@ def subgroups(result: dict, cfg: dict) -> None:
     names = [LEAGUES.get(g, g) if single else f"{DIMENSIONS[d]}: {g}" for d, g in keys]
     axes[0].set_yticks(ypos, names)
     axes[0].set_ylim(-0.6, len(keys) - 0.4)
-    axes[0].plot([], [], "|", color=MUTED, ms=9, mew=1.6, label="prevalence (no-skill PR-AUC)")
-    axes[0].legend(loc="lower right", fontsize=7, handlelength=1)
+    tick, = axes[0].plot([], [], "|", color=MUTED, ms=9, mew=1.6, ls="none")
+    fig.legend([tick], ["prevalence (no-skill PR-AUC)"], loc="lower left", fontsize=7.5, handlelength=1)
     fig.suptitle(f"{cfg['title']} (dot: estimate; line: 95% player-cluster bootstrap CI)",
                  x=0.01, ha="left", color=INK, fontsize=9.5)
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
     _save(fig, f"{cfg['id']}_{cfg['figure']}")
 
 
