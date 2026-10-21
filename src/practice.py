@@ -254,16 +254,16 @@ def _operational_report(r: dict) -> str:
                   f"{o['sundays']} Sundays ({o['rows_per_sunday']:.0f} at-risk players per Sunday), "
                   f"prevalence {o['prevalence']:.4f}, {o['events']} qualifying injuries", "",
                   "| target precision | threshold | flags / Sunday | flags / week per 25 players | precision | recall "
-                  "| injuries caught / missed | caught per 25-player squad per 90 days | missed per squad per 90 days "
-                  "| median lead time (days) |",
-                  "|---|---|---|---|---|---|---|---|---|---|"]
+                  "| injuries caught / missed | share of injuries caught | caught per 25-player squad per 90 days "
+                  "| missed per squad per 90 days | median lead time (days) |",
+                  "|---|---|---|---|---|---|---|---|---|---|---|"]
         for m in o["by_multiple"]:
             lines.append(
                 f"| {m['multiple']}× prevalence ({m['target_precision']:.4f}; calibration {m['calibration_precision']:.4f}) "
                 f"| {m['threshold']:.4f} | {m['flags_per_sunday']:.1f} {_ci(m['flags_per_sunday_ci'], '.1f')} "
                 f"| {m['flags_per_week_per_25']:.2f} {_ci(m['flags_per_week_per_25_ci'], '.2f')} "
                 f"| {m['precision']:.4f} {_ci(m['precision_ci'])} | {m['recall']:.3f} {_ci(m['recall_ci'], '.3f')} "
-                f"| {m['events_caught']} / {m['events_missed']} "
+                f"| {m['events_caught']} / {m['events_missed']} | {m['event_recall']:.3f} {_ci(m['event_recall_ci'], '.3f')} "
                 f"| {m['caught_per_squad_90d']:.2f} {_ci(m['caught_per_squad_90d_ci'], '.2f')} "
                 f"| {m['missed_per_squad_90d']:.2f} {_ci(m['missed_per_squad_90d_ci'], '.2f')} "
                 f"| {m['median_lead_days']:.0f} {_ci(m['median_lead_days_ci'], '.0f')} |")

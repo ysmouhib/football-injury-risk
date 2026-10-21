@@ -432,10 +432,11 @@ def operational(result: dict, name: str) -> None:
         ax.set_ylabel("injuries per 25-player squad per 90 days")
         ax.set_title(f"{label[1:]}-day horizon: injuries caught vs missed", loc="left", fontsize=8.5)
         ax.grid(axis="x", visible=False)
-    axes[0, 1].legend(loc="upper left", fontsize=7.5)
+    handles, names = axes[0, 1].get_legend_handles_labels()
+    fig.legend(handles, names, loc="lower right", ncol=2, fontsize=7.5)
     fig.suptitle("Frozen champion on the holdout 2024/25 (in-season): operating thresholds chosen on 2023/24",
                  x=0.01, ha="left", color=INK)
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0.035, 1, 1))
     _save(fig, f"{name}_operational")
 
 
