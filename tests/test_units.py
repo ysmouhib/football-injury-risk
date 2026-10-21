@@ -252,3 +252,23 @@ def test_decline_features():
     assert out.loc[1, "starts_share_delta"] == pytest.approx(0.5 - 0.75)
     # zero valuations are placeholders
     assert np.isnan(out.loc[2, "log_market_value"]) and np.isnan(out.loc[2, "starts_share_delta"])
+
+
+def test_survival_outcome():
+    ev = _events([
+        (1, 10, 10, "injury", "muscle"),     # event at day 10
+        (2, 5, 10, "unknown", "n/a"),        # ambiguous first -> censored at day 5
+        (2, 20, 10, "injury", "muscle"),
+        (3, 8, 10, "unknown", "n/a"),        # same-day known injury wins
+        (3, 8, 12, "injury", "knee"),
+        (4, 3, 4, "injury", "muscle"),       # too short -> not an event
+        (5, 91, 10, "injury", "muscle"),     # beyond follow-up -> censored at 90
+        (6, 0, 10, "injury", "muscle"),      # onset on t belongs to the previous row
+    ])
+    panel = pd.DataFrame({"player_id": [1, 2, 3, 4, 5, 6], "t": T0})
+    out = labels.attach_survival(panel, ev, OBSERVED_UNTIL).set_index("player_id")
+    assert out["surv90_time"].tolist() == [10, 5, 8, 90, 90, 90]
+    assert out["surv90_event"].tolist() == [1, 0, 1, 0, 0, 0]
+    late = labels.attach_survival(panel, ev, T0 + pd.Timedelta(days=60))
+    assert late["surv90_time"].isna().all()
+    assert labels.label_horizon("surv90_event") == 90

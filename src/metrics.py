@@ -152,6 +152,24 @@ class OriginScores:
     scores: dict[str, np.ndarray]
 
 
+def resample_counts(n_players: int, n_resamples: int, seed: int, chunk: int = 100):
+    """Yield (start, counts) with counts (k, n_players): player multiplicities of k resamples.
+
+    The stream depends only on (n_players, n_resamples, seed, chunk), so every
+    statistic of one comparison can be computed on the same resamples.
+    """
+    rng = np.random.default_rng(seed)
+    for start in range(0, n_resamples, chunk):
+        k = min(chunk, n_resamples - start)
+        draws = rng.integers(0, n_players, size=(k, n_players))
+        yield start, np.stack([np.bincount(d, minlength=n_players) for d in draws]).astype(float)
+
+
+def _player_index(origins: list[OriginScores]) -> tuple[np.ndarray, list[np.ndarray]]:
+    players = np.unique(np.concatenate([o.player_id for o in origins]))
+    return players, [np.searchsorted(players, o.player_id) for o in origins]
+
+
 def bootstrap_pr_auc(origins: list[OriginScores], n_resamples: int, seed: int,
                      chunk: int = 100) -> dict[str, np.ndarray]:
     """PR-AUC of every model on paired player-cluster resamples.
@@ -159,20 +177,30 @@ def bootstrap_pr_auc(origins: list[OriginScores], n_resamples: int, seed: int,
     Returns {model: array (n_resamples, n_origins)}. All models and origins share
     each resample: a drawn player contributes all of their rows in every origin.
     """
-    players = np.unique(np.concatenate([o.player_id for o in origins]))
-    index = [np.searchsorted(players, o.player_id) for o in origins]
+    players, index = _player_index(origins)
     scorers = [{m: _SortedAP(o.y, s) for m, s in o.scores.items()} for o in origins]
-    rng = np.random.default_rng(seed)
     models = list(origins[0].scores)
     out = {m: np.empty((n_resamples, len(origins))) for m in models}
-    for start in range(0, n_resamples, chunk):
-        k = min(chunk, n_resamples - start)
-        draws = rng.integers(0, len(players), size=(k, len(players)))
-        counts = np.stack([np.bincount(d, minlength=len(players)) for d in draws]).astype(float)
+    for start, counts in resample_counts(len(players), n_resamples, seed, chunk):
         for j, idx in enumerate(index):
             weights = counts[:, idx]
             for m in models:
-                out[m][start:start + k, j] = scorers[j][m](weights)
+                out[m][start:start + len(counts), j] = scorers[j][m](weights)
+    return out
+
+
+def bootstrap_calibration_slope(origins: list[OriginScores], n_resamples: int, seed: int,
+                                chunk: int = 100) -> dict[str, np.ndarray]:
+    """Calibration slope of every model on the same resamples as bootstrap_pr_auc."""
+    players, index = _player_index(origins)
+    models = list(origins[0].scores)
+    out = {m: np.empty((n_resamples, len(origins))) for m in models}
+    for start, counts in resample_counts(len(players), n_resamples, seed, chunk):
+        for j, (o, idx) in enumerate(zip(origins, index)):
+            for r, w in enumerate(counts[:, idx]):
+                keep = w > 0
+                for m in models:
+                    out[m][start + r, j] = calibration(o.y[keep], o.scores[m][keep], w[keep])[0]
     return out
 
 

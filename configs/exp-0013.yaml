@@ -1,0 +1,22 @@
+id: exp-0013
+title: Random Survival Forest, v0+history (survival baseline)
+stage: 3
+arm: survival
+hypothesis: >-
+  A Random Survival Forest on the Arm-A champion features orders time to the
+  next time-loss injury within 90 days better than chance (C^td > 0.5) and
+  yields usable 28-day risks.
+champion: null  # first survival champion of record (the design notes Stage 3)
+data_config: configs/data.yaml
+features: v0+history
+outcome: surv90
+seed: 20261020
+# Fixed settings pre-registered in PLAN amendment A9 (not tuned).
+model:
+  kind: rsf
+  params:
+    n_estimators: 200
+    max_samples: 50000
+    min_samples_leaf: 100
+    max_features: sqrt
+    n_jobs: 4

@@ -9,3 +9,7 @@ aggregation: main  # decided by the pre-specified power rule on the exp-0001 bas
 n_resamples: 1000
 ci_level: 0.95
 max_slope_regression: 0.05
+# Owner amendment 2026-10-21 (forward only): from this experiment on, condition 3 fails only if
+# delta_cal = |b_champion - 1| - |b_challenger - 1| < -0.05 and its paired player-cluster
+# bootstrap 95% CI lies entirely below -0.05. Earlier experiments keep the point-estimate rule.
+calibration_rule_v2_from: exp-0013

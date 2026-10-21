@@ -64,3 +64,21 @@ def test_bootstrap_is_paired_and_reproducible():
     np.testing.assert_array_equal(first["a"], first["b"])  # same resample for both models
     np.testing.assert_array_equal(first["a"][:, 0], first["a"][:, 1])  # same players in both origins
     assert first["a"].std() > 0
+
+
+def test_calibration_condition_v1_and_v2():
+    from src.evaluate import calibration_condition, calibration_rule_v2, verdict_from
+
+    cfg = {"max_slope_regression": 0.05, "ci_level": 0.95, "calibration_rule_v2_from": "exp-0013"}
+    # exp-0008's y28 slopes under the original point-estimate rule: fails
+    assert not calibration_condition(0.995, 1.061, None, None, cfg)["cond3_no_slope_regression"]
+    rng = np.random.default_rng(0)
+    noisy = calibration_condition(0.995, 1.061, rng.normal(0.995, 0.09, 1000), rng.normal(1.061, 0.08, 1000), cfg)
+    assert noisy["rule"] == "v2" and noisy["cond3_no_slope_regression"]  # CI not entirely below -0.05
+    clear = calibration_condition(1.0, 0.7, rng.normal(1.0, 0.01, 1000), rng.normal(0.7, 0.01, 1000), cfg)
+    assert not clear["cond3_no_slope_regression"]
+    assert calibration_rule_v2("exp-0013", cfg) and not calibration_rule_v2("exp-0012", cfg)
+    ok = {"cond1_delta_positive": True, "cond2_ci_excludes_zero": True, "cond3_no_slope_regression": True}
+    assert verdict_from({"a": ok}) == "PROMOTE"
+    assert verdict_from({"a": ok, "b": {**ok, "cond2_ci_excludes_zero": False}}) == "INCONCLUSIVE"
+    assert verdict_from({"a": {**ok, "cond3_no_slope_regression": False}}) == "REJECT"

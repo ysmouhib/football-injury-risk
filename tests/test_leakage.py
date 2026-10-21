@@ -4,10 +4,15 @@ import numpy as np
 import pandas as pd
 
 from src import splits
-from src.labels import LABEL_SPECS, PRIMARY_LABELS, label_horizon
+from src.labels import LABEL_SPECS, PRIMARY_LABELS, SURVIVAL_SPECS, label_horizon
 from src.panel import FEATURE_SETS
 
 MAX_ABS_CORRELATION = 0.95
+SURVIVAL_LABELS = tuple(f"{name}_event" for name in SURVIVAL_SPECS)
+
+
+def _split_labels(panel):
+    return PRIMARY_LABELS + tuple(lab for lab in SURVIVAL_LABELS if lab in panel.columns)
 
 
 def _feature_columns(panel):
@@ -28,12 +33,20 @@ def test_feature_timestamps_precede_outcomes(panel):
         assert (panel.loc[has, "feat_ts"] < onset[has]).all(), label
         labelled = panel[label].notna()
         assert (panel.loc[labelled, label].eq(1) == has[labelled]).all(), label
+    for name, horizon in SURVIVAL_SPECS.items():
+        if f"{name}_time" not in panel.columns:
+            continue
+        time, event = panel[f"{name}_time"], panel[f"{name}_event"]
+        assert time.between(1, horizon).all(), name
+        onset = panel["t"] + pd.to_timedelta(time, unit="D")
+        assert (panel["feat_ts"] < onset).all(), name
+        assert set(event.unique()) <= {0.0, 1.0}, name
 
 
 def test_feature_list_excludes_outcome_columns():
     for numeric, categorical in FEATURE_SETS.values():
         for name in numeric + categorical:
-            assert not name.startswith(("y", "onset")), name
+            assert not name.startswith(("y", "onset", "surv")), name
             assert name not in LABEL_SPECS
 
 
@@ -41,7 +54,7 @@ def test_player_sets_disjoint(panel, cfg):
     roles = splits.player_roles(panel["player_id"], cfg["splits"]["group_fractions"], cfg["seed"])
     assert roles.groupby(panel["player_id"]).nunique().eq(1).all()
     development_players = set()
-    for label in PRIMARY_LABELS:
+    for label in _split_labels(panel):
         for split in splits.rolling_origins(panel, cfg, label):
             train = set(panel["player_id"].iloc[split.train_idx])
             evaluate = set(panel["player_id"].iloc[split.eval_idx])
@@ -109,6 +122,21 @@ def test_labels_and_risk_set_match_bruteforce_recount(panel, cfg):
                 assert np.isnan(got), (row.player_id, row.t, label)
             else:
                 assert got == 0, (row.player_id, row.t, label)
+        for name, horizon in SURVIVAL_SPECS.items():
+            if f"{name}_time" not in panel.columns:
+                continue
+            window = ev[(ev["from_date"] > row.t) & (ev["from_date"] <= row.t + pd.Timedelta(days=horizon))
+                        & (ev["days_missed"] >= 7)]
+            first_injury = window.loc[window["category"].eq("injury"), "from_date"].min()
+            first_unknown = window.loc[window["category"].eq("unknown"), "from_date"].min()
+            if pd.notna(first_injury) and (pd.isna(first_unknown) or first_injury <= first_unknown):
+                expected = ((first_injury - row.t).days, 1.0)
+            elif pd.notna(first_unknown):
+                expected = ((first_unknown - row.t).days, 0.0)
+            else:
+                expected = (horizon, 0.0)
+            got = (getattr(row, f"{name}_time"), getattr(row, f"{name}_event"))
+            assert got == expected, (row.player_id, row.t, name, got, expected)
 
 
 def _assert_chronological(panel, split, embargo_days):
@@ -122,7 +150,7 @@ def _assert_chronological(panel, split, embargo_days):
 
 def test_split_boundaries_chronological_with_embargo(panel, cfg):
     embargo = cfg["splits"]["embargo_days"]
-    for label in PRIMARY_LABELS:
+    for label in _split_labels(panel):
         origins = splits.rolling_origins(panel, cfg, label)
         assert len(origins) >= 3
         assert [s.eval_season for s in origins] == sorted(s.eval_season for s in origins)

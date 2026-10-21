@@ -89,8 +89,27 @@ def _label_dossier(rows: pd.DataFrame, ev_cfg: dict, seed: int, out_dir: Path, l
     }
 
 
+def calibration_rule_v2(exp_id: str, ev_cfg: dict) -> bool:
+    """Owner amendment of 2026-10-21 applies from the configured experiment on (forward only)."""
+    start = ev_cfg.get("calibration_rule_v2_from")
+    return bool(start) and int(exp_id.split("-")[1]) >= int(start.split("-")[1])
+
+
+def calibration_condition(champion_slope: float, challenger_slope: float, champ_draws: np.ndarray | None,
+                          chall_draws: np.ndarray | None, ev_cfg: dict) -> dict:
+    """Condition 3. v1: point-estimate regression <= tolerance. v2 (draws given): fail only if
+    delta_cal < -tol and the bootstrap CI of delta_cal lies entirely below -tol."""
+    tol = ev_cfg["max_slope_regression"]
+    delta_cal = abs(champion_slope - 1) - abs(challenger_slope - 1)
+    if champ_draws is None:
+        return {"rule": "v1", "delta_cal": delta_cal, "cond3_no_slope_regression": -delta_cal <= tol}
+    ci = metrics.percentile_ci(np.abs(champ_draws - 1) - np.abs(chall_draws - 1), ev_cfg["ci_level"])
+    return {"rule": "v2", "delta_cal": delta_cal, "delta_cal_ci": ci,
+            "cond3_no_slope_regression": not (delta_cal < -tol and ci[1] < -tol)}
+
+
 def _compare(preds: pd.DataFrame, champ: pd.DataFrame, own: dict, champ_metrics: dict,
-             ev_cfg: dict, seed: int, boot_path: Path) -> dict:
+             ev_cfg: dict, seed: int, boot_path: Path, rule_v2: bool) -> dict:
     how, main = ev_cfg["aggregation"], ev_cfg["main_origin"]
     keys = ["label", "origin", "player_id", "t"]
     result, deltas = {}, {}
@@ -109,26 +128,36 @@ def _compare(preds: pd.DataFrame, champ: pd.DataFrame, own: dict, champ_metrics:
         mine, theirs = own[label]["aggregate"][how], champ_metrics["labels"][label]["aggregate"][how]
         delta = mine["pr_auc"] - theirs["pr_auc"]
         ci = metrics.percentile_ci(delta_dist, ev_cfg["ci_level"])
-        regression = abs(mine["calibration_slope"] - 1) - abs(theirs["calibration_slope"] - 1)
+        draws = (None, None)
+        if rule_v2:
+            slopes = metrics.bootstrap_calibration_slope(origins, ev_cfg["n_resamples"], seed)
+            draws = tuple(_aggregate_boot(slopes[m], order, how, main) for m in ("champion", "challenger"))
+        cal = calibration_condition(theirs["calibration_slope"], mine["calibration_slope"], *draws, ev_cfg)
         result[label] = {
             "champion_pr_auc": theirs["pr_auc"], "challenger_pr_auc": mine["pr_auc"],
             "delta": delta, "delta_ci": ci,
             "champion_slope": theirs["calibration_slope"], "challenger_slope": mine["calibration_slope"],
-            "slope_regression": regression,
+            "slope_regression": -cal["delta_cal"],
+            **{k: v for k, v in cal.items() if k != "cond3_no_slope_regression"},
             "cond1_delta_positive": delta > 0,
             "cond2_ci_excludes_zero": ci[0] > 0,
-            "cond3_no_slope_regression": regression <= ev_cfg["max_slope_regression"],
+            "cond3_no_slope_regression": cal["cond3_no_slope_regression"],
         }
     # kept so a deterministic seed repeat can be decided on the pooled draws
     np.savez(boot_path, **deltas)
-    conds = pd.DataFrame(result).T
-    if conds[["cond1_delta_positive", "cond2_ci_excludes_zero", "cond3_no_slope_regression"]].all().all():
-        verdict = "PROMOTE"
-    elif conds["cond1_delta_positive"].all() and not conds["cond2_ci_excludes_zero"].all():
-        verdict = "INCONCLUSIVE"
-    else:
-        verdict = "REJECT"
-    return {"aggregation": how, "labels": result, "verdict": verdict}
+    return {"aggregation": how, "labels": result, "verdict": verdict_from(result)}
+
+
+def verdict_from(conditions: dict[str, dict]) -> str:
+    """Promotion rule over one or more decision metrics (intersection)."""
+    c1 = all(c["cond1_delta_positive"] for c in conditions.values())
+    c2 = all(c["cond2_ci_excludes_zero"] for c in conditions.values())
+    c3 = all(c["cond3_no_slope_regression"] for c in conditions.values())
+    if c1 and c2 and c3:
+        return "PROMOTE"
+    if c1 and not c2:
+        return "INCONCLUSIVE"
+    return "REJECT"
 
 
 def _fmt_ci(ci) -> str:
@@ -199,6 +228,10 @@ def evaluate(config_path: Path) -> dict:
     preds = load_predictions(exp["id"])
     out_dir = EXPERIMENTS_REPORTS_DIR / exp["id"]
     out_dir.mkdir(parents=True, exist_ok=True)
+    if exp.get("arm") == "survival":
+        from .evaluate_survival import evaluate_survival
+
+        return evaluate_survival(exp, ev_cfg, run, preds)
 
     result = {"id": exp["id"], "labels": {}}
     for label in exp["labels"]:
@@ -212,7 +245,8 @@ def evaluate(config_path: Path) -> dict:
         champ_metrics = json.loads((run_dir(champ_id) / "metrics.json").read_text(encoding="utf-8"))
         result["comparison"] = _compare(preds, load_predictions(champ_id), result["labels"],
                                         champ_metrics, ev_cfg, exp["seed"],
-                                        run_dir(exp["id"]) / "delta_bootstrap.npz")
+                                        run_dir(exp["id"]) / "delta_bootstrap.npz",
+                                        calibration_rule_v2(exp["id"], ev_cfg))
     else:
         power = {}
         for label in ev_cfg["decision_labels"]:

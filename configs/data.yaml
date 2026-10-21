@@ -1,6 +1,6 @@
 # Data scope and player-week panel construction (feature store).
 # Every value here is justified by the Stage 0 audit; changing one changes the data hash.
-version: panel_v4
+version: panel_v5
 seed: 20261020
 
 # Feature families added on top of v0 (PLAN.md amendment A8). Adding a family only
@@ -22,6 +22,7 @@ labels:
   horizons_days: [7, 28]
   min_days_missed: 7
   sensitivity_min_days_missed: 3
+  # Survival outcomes (src/labels.py SURVIVAL_SPECS): surv90 = days to first qualifying injury in (t, t+90].
   # Injury table snapshot end (max from_date); windows past this date are not observable.
   observed_until: "2026-09-28"
 

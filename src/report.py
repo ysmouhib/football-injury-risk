@@ -42,20 +42,7 @@ def _loop_decision(original: dict, repeat: dict, ev_cfg: dict) -> tuple[str, str
     return ("PROMOTE" if passed else "REJECT"), "pooled bootstrap " + ", ".join(cis)
 
 
-def main() -> None:
-    ev_cfg = load_yaml(EVALUATION_CONFIG)
-    how = ev_cfg["aggregation"] or "main"
-    labels = ev_cfg["decision_labels"]
-    runs = []
-    for path in sorted(EXPERIMENTS_DATA_DIR.glob("exp-*/metrics.json")):
-        m = json.loads(path.read_text(encoding="utf-8"))
-        cfg = load_yaml(CONFIGS_DIR / f"{m['id']}.yaml")
-        runs.append({
-            "id": m["id"], "cfg": cfg, "metrics": m,
-            "scores": {lab: m["labels"][lab]["aggregate"][how]["pr_auc"] for lab in labels},
-            "verdict": m["comparison"]["verdict"] if "comparison" in m else "BASELINE",
-        })
-
+def _arm_section(runs: list[dict], metric_names: list[str], ev_cfg: dict, title: str) -> list[str]:
     decisions, notes, repeat_of, has_repeat = {}, {}, {}, set()
     for i, run in enumerate(runs):
         if run["verdict"] != "INCONCLUSIVE" or run["id"] in repeat_of:
@@ -76,11 +63,9 @@ def main() -> None:
         elif decisions.get(run["id"], run["verdict"]) == "PROMOTE" and run["id"] not in has_repeat:
             champion = run["id"]
 
-    lines = ["# Experiment summary", "",
-             f"Aggregation: {how}; decision labels: {', '.join(labels)}.", "",
-             "| id | title | vs | " + " | ".join(f"PR-AUC {lab}" for lab in labels)
-             + " | run verdict | loop decision |",
-             "|---|---|---|" + "---|" * len(labels) + "---|---|"]
+    lines = [f"## {title}", "",
+             "| id | title | vs | " + " | ".join(metric_names) + " | run verdict | loop decision |",
+             "|---|---|---|" + "---|" * len(metric_names) + "---|---|"]
     for run in runs:
         note = f" (repeat of {repeat_of[run['id']]})" if run["id"] in repeat_of else ""
         pending = run["verdict"] if run["verdict"] != "INCONCLUSIVE" else "pending repeat"
@@ -88,14 +73,40 @@ def main() -> None:
         if run["id"] in notes:
             decision += f" — {notes[run['id']]}"
         lines.append(f"| {run['id']} | {run['cfg']['title']} | {run['cfg'].get('champion') or '—'} | "
-                     + " | ".join(f"{run['scores'][lab]:.4f}" for lab in labels)
+                     + " | ".join(f"{run['scores'][k]:.4f}" for k in metric_names)
                      + f" | {run['verdict']}{note} | {decision} |")
     if champion and baseline:
         champ = next(r for r in runs if r["id"] == champion)
-        lines += ["", f"**Current champion: {champion}.** Cumulative Δ PR-AUC vs baseline {baseline['id']}: "
-                  + ", ".join(f"{lab} {champ['scores'][lab] - baseline['scores'][lab]:+.4f}" for lab in labels)]
+        lines += ["", f"**Current champion: {champion}.** Cumulative Δ vs baseline {baseline['id']}: "
+                  + ", ".join(f"{k} {champ['scores'][k] - baseline['scores'][k]:+.4f}" for k in metric_names)]
+    return lines + [""]
+
+
+def main() -> None:
+    ev_cfg = load_yaml(EVALUATION_CONFIG)
+    how = ev_cfg["aggregation"] or "main"
+    labels = ev_cfg["decision_labels"]
+    arms = {"classification": [], "survival": []}
+    for path in sorted(EXPERIMENTS_DATA_DIR.glob("exp-*/metrics.json")):
+        m = json.loads(path.read_text(encoding="utf-8"))
+        cfg = load_yaml(CONFIGS_DIR / f"{m['id']}.yaml")
+        arm = m.get("arm", "classification")
+        if arm == "survival":
+            scores = {"C^td": m["aggregate"]["c_td"], "IBS": m["aggregate"]["ibs"]}
+        else:
+            scores = {f"PR-AUC {lab}": m["labels"][lab]["aggregate"][how]["pr_auc"] for lab in labels}
+        arms[arm].append({"id": m["id"], "cfg": cfg, "metrics": m, "scores": scores,
+                          "verdict": m["comparison"]["verdict"] if "comparison" in m else "BASELINE"})
+
+    lines = ["# Experiment summary", "",
+             f"Aggregation: {how}; classification decision labels: {', '.join(labels)}; "
+             "survival decision metric: C^td (main origin).", ""]
+    lines += _arm_section(arms["classification"], [f"PR-AUC {lab}" for lab in labels], ev_cfg,
+                          "Arm A — classification")
+    if arms["survival"]:
+        lines += _arm_section(arms["survival"], ["C^td", "IBS"], ev_cfg, "Arm B — survival")
     out = REPORTS_DIR / "experiments_summary.md"
-    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    out.write_text("\n".join(lines), encoding="utf-8")
     print(f"wrote {out}")
 
 

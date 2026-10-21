@@ -158,6 +158,8 @@ def build_panel(cfg: dict, mapping: dict) -> tuple[pd.DataFrame, dict]:
 
     log.info("labels")
     panel = labels.attach_labels(panel, events, pd.Timestamp(cfg["labels"]["observed_until"]))
+    panel = labels.attach_survival(panel, events, pd.Timestamp(cfg["labels"]["observed_until"]),
+                                   cfg["labels"]["min_days_missed"])
 
     feature_columns = [c for num, cat in FEATURE_SETS.values() for c in num + cat]
     ordered = ID_COLUMNS + [c for c in dict.fromkeys(feature_columns) if c in panel.columns]

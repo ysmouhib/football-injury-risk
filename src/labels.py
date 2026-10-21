@@ -26,10 +26,14 @@ LABEL_SPECS: dict[str, tuple[int, int, str]] = {
     "y28_soft": (28, 7, "soft"),
 }
 PRIMARY_LABELS = ("y7", "y28")
+# survival outcome name -> follow-up days; columns <name>_time and <name>_event
+SURVIVAL_SPECS: dict[str, int] = {"surv90": 90}
 
 
 def label_horizon(label: str) -> int:
-    return LABEL_SPECS[label][0]
+    if label in LABEL_SPECS:
+        return LABEL_SPECS[label][0]
+    return SURVIVAL_SPECS[label.removesuffix("_event").removesuffix("_time")]
 
 
 def _compile(pattern: str) -> re.Pattern:
@@ -146,4 +150,40 @@ def attach_labels(
         y[unobservable] = np.nan
         out[name] = y
         out[f"onset_{name}"] = onset.to_numpy()
+    return out
+
+
+def _first_onset_after(panel: pd.DataFrame, onsets: pd.DataFrame) -> pd.Series:
+    """First onset date strictly after t per panel row (NaT if none)."""
+    left = panel[["player_id", "t"]].assign(_row=np.arange(len(panel))).sort_values("t", kind="mergesort")
+    right = onsets[["player_id", "from_date"]].drop_duplicates().sort_values("from_date", kind="mergesort")
+    merged = pd.merge_asof(left, right, left_on="t", right_on="from_date", by="player_id",
+                           direction="forward", allow_exact_matches=False)
+    return merged.sort_values("_row")["from_date"].set_axis(panel.index)
+
+
+def attach_survival(panel: pd.DataFrame, events: pd.DataFrame, observed_until: pd.Timestamp,
+                    min_days: int = 7) -> pd.DataFrame:
+    """Add landmark survival outcomes <name>_time (days) and <name>_event for each SURVIVAL_SPECS entry.
+
+    Event: onset of the first qualifying injury in (t, t + H]. An unknown-reason
+    absence of qualifying length starting earlier censors the row at its onset
+    (a known injury on the same day wins); otherwise the row is censored at H.
+    """
+    out = panel.copy()
+    long_enough = events["days_missed"] >= min_days
+    first_injury = _first_onset_after(out, events[events["category"].eq("injury") & long_enough])
+    first_unknown = _first_onset_after(out, events[events["category"].eq("unknown") & long_enough])
+    for name, horizon in SURVIVAL_SPECS.items():
+        end = out["t"] + pd.Timedelta(days=horizon)
+        injury_in = first_injury.notna() & (first_injury <= end)
+        unknown_in = first_unknown.notna() & (first_unknown <= end)
+        event = injury_in & (~unknown_in | (first_injury <= first_unknown))
+        censored_early = unknown_in & ~event
+        time = pd.Series(float(horizon), index=out.index)
+        time[event] = (first_injury[event] - out.loc[event, "t"]).dt.days.astype(float)
+        time[censored_early] = (first_unknown[censored_early] - out.loc[censored_early, "t"]).dt.days.astype(float)
+        unobservable = end > observed_until
+        out[f"{name}_time"] = time.where(~unobservable)
+        out[f"{name}_event"] = event.astype(float).where(~unobservable)
     return out
