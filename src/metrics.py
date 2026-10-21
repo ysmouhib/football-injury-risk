@@ -223,3 +223,19 @@ def percentile_ci(values: np.ndarray, level: float = 0.95) -> tuple[float, float
     alpha = (1 - level) / 2
     lo, hi = np.nanpercentile(values, [100 * alpha, 100 * (1 - alpha)])
     return float(lo), float(hi)
+
+
+def bootstrap_brier(origins: list[OriginScores], n_resamples: int, seed: int,
+                    chunk: int = 100) -> dict[str, np.ndarray]:
+    """Brier score of every model on the same resamples as bootstrap_pr_auc."""
+    players, index = _player_index(origins)
+    P, models = len(players), list(origins[0].scores)
+    sq = [{m: np.bincount(idx, weights=(o.scores[m] - o.y) ** 2, minlength=P) for m in models}
+          for o, idx in zip(origins, index)]
+    rows = [np.bincount(idx, minlength=P).astype(float) for idx in index]
+    out = {m: np.empty((n_resamples, len(origins))) for m in models}
+    for start, counts in resample_counts(P, n_resamples, seed, chunk):
+        for j in range(len(origins)):
+            for m in models:
+                out[m][start:start + len(counts), j] = (counts @ sq[j][m]) / (counts @ rows[j])
+    return out

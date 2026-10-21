@@ -1,0 +1,23 @@
+id: exp-0016
+title: Champion + Platt calibration layer
+stage: 4
+hypothesis: >-
+  A Platt calibration layer fitted on the temporal calibration split lowers the
+  validation Brier score of the champion at both horizons without hurting
+  discrimination.
+champion: exp-0004
+data_config: configs/data.yaml
+features: v0+history
+labels: [y7, y28]
+seed: 20261020
+# Calibration-layer loop: decided on the Brier score with a PR-AUC guard (PLAN open
+# decision 15); one controlled change vs exp-0004: the calibration block.
+decision_metric: brier
+calibration:
+  method: platt
+model:
+  kind: logistic
+  params:
+    C: 1.0
+    class_weight: balanced
+    max_iter: 2000

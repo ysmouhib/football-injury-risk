@@ -82,3 +82,37 @@ def test_calibration_condition_v1_and_v2():
     assert verdict_from({"a": ok}) == "PROMOTE"
     assert verdict_from({"a": ok, "b": {**ok, "cond2_ci_excludes_zero": False}}) == "INCONCLUSIVE"
     assert verdict_from({"a": {**ok, "cond3_no_slope_regression": False}}) == "REJECT"
+
+
+def test_platt_recovers_known_map_and_isotonic_is_monotone():
+    from src.calibration import build_calibrator
+
+    rng = np.random.default_rng(1)
+    p = rng.uniform(0.2, 0.8, 100_000)
+    true = 1 / (1 + np.exp(-(-3.0 + 0.8 * np.log(p / (1 - p)))))
+    y = (rng.random(len(p)) < true).astype(int)
+    platt = build_calibrator("platt").fit(p, y)
+    assert platt.a == pytest.approx(-3.0, abs=0.05) and platt.b == pytest.approx(0.8, abs=0.08)
+    iso = build_calibrator("isotonic").fit(p, y)
+    grid = np.linspace(0.1, 0.9, 50)
+    assert np.all(np.diff(iso.transform(grid)) >= 0)
+    assert iso.transform(np.array([0.0]))[0] == iso.transform(np.array([p.min()]))[0]  # clipped
+
+
+def test_bootstrap_brier_matches_row_duplication():
+    y, p = _data(n=600, seed=2)
+    players = np.repeat(np.arange(60), 10)
+    origin = metrics.OriginScores(origin=2023, player_id=players, y=y, scores={"a": p})
+    draws = metrics.bootstrap_brier([origin], 5, seed=4)["a"][:, 0]
+    _, counts = next(metrics.resample_counts(60, 5, 4))
+    for k in range(5):
+        w = counts[k][players]
+        assert draws[k] == pytest.approx(np.sum(w * (p - y) ** 2) / w.sum())
+
+
+def test_verdict_guard_blocks_promotion():
+    from src.evaluate import verdict_from
+
+    ok = {"cond1_delta_positive": True, "cond2_ci_excludes_zero": True, "cond3_no_slope_regression": True}
+    assert verdict_from({"a": {**ok, "guard_pr_auc_not_worse": False}}) == "REJECT"
+    assert verdict_from({"a": {**ok, "guard_pr_auc_not_worse": True}}) == "PROMOTE"

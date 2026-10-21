@@ -19,6 +19,7 @@ import numpy as np
 import pandas as pd
 
 from . import splits, survival
+from .calibration import build_calibrator
 from .constants import REPO_ROOT
 from .labels import SURVIVAL_SPECS
 from .experiment import environment, git_state, load_experiment, panel_meta, panel_path, predictions_path, run_dir
@@ -50,13 +51,13 @@ def train(config_path: Path) -> None:
     if digest != meta["panel_sha256"]:
         raise SystemExit("feature store content does not match its recorded hash")
 
+    out = run_dir(exp["id"])
+    out.mkdir(parents=True, exist_ok=True)
     if exp.get("arm") == "survival":
         predictions, split_info, extra = _train_survival(exp, panel)
     else:
         predictions, split_info, extra = _train_classification(exp, panel)
 
-    out = run_dir(exp["id"])
-    out.mkdir(parents=True, exist_ok=True)
     pd.concat(predictions, ignore_index=True).to_parquet(predictions_path(exp["id"]), index=False)
     run = {
         "id": exp["id"], "config_path": exp["config_path"], "config_sha256": exp["config_sha256"],
@@ -110,11 +111,44 @@ def _train_survival(exp: dict, panel: pd.DataFrame) -> tuple[list, list, dict]:
     return predictions, split_info, {"censoring_km": censoring}
 
 
+def _fit_predict(exp: dict, train: pd.DataFrame, label: str, *scored: pd.DataFrame) -> list[np.ndarray]:
+    numeric, categorical = exp["numeric"], exp["categorical"]
+    categories = fit_categories(train, categorical)
+    model = build_model(exp["model"], numeric, categorical, exp["seed"])
+    model.fit(prepare_X(train, numeric, categorical, categories), train[label].astype(int))
+    return [predict_risk(model, prepare_X(df, numeric, categorical, categories)) for df in scored]
+
+
+def _calibrate(exp: dict, panel: pd.DataFrame, label: str, origin: int, p_raw: np.ndarray,
+               train_first: int) -> tuple[np.ndarray, dict, pd.DataFrame]:
+    """Calibrated validation probabilities, a record of the calibration fit, and the calibrated
+    out-of-sample scores of calibration half B (for conformal prediction).
+
+    The calibrator learns from the inner model's (seasons <= origin - 2) out-of-time scores on half
+    A of the calibration season and is applied to the deployed model's raw validation scores.
+    """
+    cs = splits.calibration_split(panel, exp["data"], origin, label)
+    inner = panel.iloc[cs.inner_idx]
+    inner = inner[inner["season"] >= train_first]
+    half_a, half_b = panel.iloc[cs.calib_a_idx], panel.iloc[cs.calib_b_idx]
+    score_a, score_b = _fit_predict(exp, inner, label, half_a, half_b)
+    calibrator = build_calibrator(exp["calibration"]["method"]).fit(score_a, half_a[label].to_numpy())
+    record = {
+        "split": cs.name, "calibration_season": cs.calibration_season,
+        "inner_cutoff_t": str(cs.inner_cutoff_t.date()), "calibration_cutoff_t": str(cs.calibration_cutoff_t.date()),
+        "inner_rows": len(inner), "half_a_rows": len(half_a), "half_b_rows": len(half_b),
+        "half_a_positives": int(half_a[label].sum()), **calibrator.describe(),
+    }
+    conformal = half_b[KEEP_COLUMNS].assign(label=label, origin=origin, y=half_b[label].astype(int).to_numpy(),
+                                            p=calibrator.transform(score_b))
+    return calibrator.transform(p_raw), record, conformal
+
+
 def _train_classification(exp: dict, panel: pd.DataFrame) -> tuple[list, list, dict]:
     data_cfg, numeric, categorical = exp["data"], exp["numeric"], exp["categorical"]
     # optional data-scope change: train on a later-starting window (never earlier than the panel)
     train_first = exp.get("train_first_season", data_cfg["seasons"]["first"])
-    predictions, split_info = [], []
+    predictions, split_info, calibration, conformal = [], [], {}, []
     for label in exp["labels"]:
         for split in splits.rolling_origins(panel, data_cfg, label):
             tr, ev = panel.iloc[split.train_idx], panel.iloc[split.eval_idx]
@@ -124,12 +158,20 @@ def _train_classification(exp: dict, panel: pd.DataFrame) -> tuple[list, list, d
             start = time.perf_counter()
             model.fit(prepare_X(tr, numeric, categorical, categories), tr[label].astype(int))
             seconds = time.perf_counter() - start
-            p = predict_risk(model, prepare_X(ev, numeric, categorical, categories))
+            p_raw = predict_risk(model, prepare_X(ev, numeric, categorical, categories))
+            p = p_raw
+            if exp.get("calibration"):
+                p, record, half_b = _calibrate(exp, panel, label, split.eval_season, p_raw, train_first)
+                calibration[split.name] = record
+                conformal.append(half_b)
             predictions.append(ev[KEEP_COLUMNS].assign(label=label, origin=split.eval_season,
-                                                       y=ev[label].astype(int).to_numpy(), p=p))
+                                                       y=ev[label].astype(int).to_numpy(), p=p, p_raw=p_raw))
             split_info.append(_split_record(split, label, tr, ev, train_first, int(tr[label].sum()), seconds))
             log.info("%s: fit %.1fs on %s rows", split.name, seconds, f"{len(tr):,}")
-    return predictions, split_info, {}
+    if conformal:
+        pd.concat(conformal, ignore_index=True).to_parquet(run_dir(exp["id"]) / "conformal_calibration.parquet",
+                                                            index=False)
+    return predictions, split_info, ({"calibration": calibration} if calibration else {})
 
 
 def main() -> None:

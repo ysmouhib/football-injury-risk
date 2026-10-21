@@ -95,3 +95,53 @@ def final_split(panel: pd.DataFrame, cfg: dict, label: str | None, horizon_days:
         raise PermissionError("the final holdout split is reserved for the pre-registered Stage 6 run")
     season = cfg["splits"]["holdout_season"]
     return _split(panel, cfg, season, "test", ("train", "validation"), label, horizon_days, f"final-{season}")
+
+
+def calibration_halves(player_ids: pd.Series, seed: int) -> pd.Series:
+    """'A' (fits the calibrator) or 'B' (conformal scores) per row, by a salted hash of player_id."""
+    uniq = pd.unique(player_ids)
+    half = {pid: "A" if int(hashlib.sha256(f"{seed}:calibration:{int(pid)}".encode()).hexdigest()[:15], 16) % 2 == 0
+            else "B" for pid in uniq}
+    return player_ids.map(half)
+
+
+@dataclass(frozen=True)
+class CalibrationSplit:
+    name: str
+    label: str
+    horizon_days: int
+    val_season: int
+    calibration_season: int
+    inner_cutoff_t: pd.Timestamp
+    calibration_cutoff_t: pd.Timestamp
+    inner_idx: np.ndarray
+    calib_a_idx: np.ndarray
+    calib_b_idx: np.ndarray
+
+
+def calibration_split(panel: pd.DataFrame, cfg: dict, val_season: int, label: str) -> CalibrationSplit:
+    """Rows for post-hoc calibration at a validation origin, all from the train player group.
+
+    inner: seasons <= val_season - 2 with outcome windows closing >= embargo before season
+    val_season - 1; calibration: season val_season - 1 with outcome windows closing >= embargo
+    before val_season (the training cutoff), split by player into halves A and B.
+    """
+    s = cfg["splits"]
+    if val_season >= s["holdout_season"]:
+        raise ValueError(f"season {val_season} is not a validation season (holdout is one-shot)")
+    horizon = label_horizon(label)
+    gap = pd.Timedelta(days=horizon + s["embargo_days"])
+    calibration_season = val_season - 1
+    inner_cutoff = first_sunday_of_season(calibration_season) - gap
+    calibration_cutoff = first_sunday_of_season(val_season) - gap
+    train = player_roles(panel["player_id"], s["group_fractions"], cfg["seed"]).eq("train") & panel[label].notna()
+    inner = train & (panel["season"] >= cfg["seasons"]["first"]) & (panel["t"] <= inner_cutoff)
+    calib = train & panel["season"].eq(calibration_season) & (panel["t"] <= calibration_cutoff)
+    halves = calibration_halves(panel["player_id"], cfg["seed"])
+    return CalibrationSplit(
+        name=f"calibration-{val_season}-{label}", label=label, horizon_days=horizon, val_season=val_season,
+        calibration_season=calibration_season, inner_cutoff_t=inner_cutoff, calibration_cutoff_t=calibration_cutoff,
+        inner_idx=np.flatnonzero(inner.to_numpy()),
+        calib_a_idx=np.flatnonzero((calib & halves.eq("A")).to_numpy()),
+        calib_b_idx=np.flatnonzero((calib & halves.eq("B")).to_numpy()),
+    )

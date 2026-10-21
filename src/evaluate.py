@@ -109,7 +109,7 @@ def calibration_condition(champion_slope: float, challenger_slope: float, champ_
 
 
 def _compare(preds: pd.DataFrame, champ: pd.DataFrame, own: dict, champ_metrics: dict,
-             ev_cfg: dict, seed: int, boot_path: Path, rule_v2: bool) -> dict:
+             ev_cfg: dict, seed: int, boot_path: Path, rule_v2: bool, decision_metric: str = "pr_auc") -> dict:
     how, main = ev_cfg["aggregation"], ev_cfg["main_origin"]
     keys = ["label", "origin", "player_id", "t"]
     result, deltas = {}, {}
@@ -143,6 +143,23 @@ def _compare(preds: pd.DataFrame, champ: pd.DataFrame, own: dict, champ_metrics:
             "cond2_ci_excludes_zero": ci[0] > 0,
             "cond3_no_slope_regression": cal["cond3_no_slope_regression"],
         }
+        if decision_metric == "brier":
+            # calibration-layer loop (PLAN open decision 15): Brier decides, PR-AUC is a guard
+            brier = metrics.bootstrap_brier(origins, ev_cfg["n_resamples"], seed)
+            brier_dist = (_aggregate_boot(brier["challenger"], order, how, main)
+                          - _aggregate_boot(brier["champion"], order, how, main))
+            b_mine = _aggregate(pd.Series({int(k): v["brier"] for k, v in own[label]["per_origin"].items()}), how, main)
+            b_theirs = _aggregate(pd.Series({int(k): v["brier"] for k, v in
+                                             champ_metrics["labels"][label]["per_origin"].items()}), how, main)
+            b_ci = metrics.percentile_ci(brier_dist, ev_cfg["ci_level"])
+            deltas[label] = brier_dist
+            result[label].update({
+                "decision_metric": "brier", "champion_brier": b_theirs, "challenger_brier": b_mine,
+                "delta_brier": b_mine - b_theirs, "delta_brier_ci": b_ci,
+                "cond1_delta_positive": b_mine - b_theirs < 0,
+                "cond2_ci_excludes_zero": b_ci[1] < 0,
+                "guard_pr_auc_not_worse": ci[1] >= 0,
+            })
     # kept so a deterministic seed repeat can be decided on the pooled draws
     np.savez(boot_path, **deltas)
     return {"aggregation": how, "labels": result, "verdict": verdict_from(result)}
@@ -153,7 +170,8 @@ def verdict_from(conditions: dict[str, dict]) -> str:
     c1 = all(c["cond1_delta_positive"] for c in conditions.values())
     c2 = all(c["cond2_ci_excludes_zero"] for c in conditions.values())
     c3 = all(c["cond3_no_slope_regression"] for c in conditions.values())
-    if c1 and c2 and c3:
+    guard = all(c.get("guard_pr_auc_not_worse", True) for c in conditions.values())
+    if c1 and c2 and c3 and guard:
         return "PROMOTE"
     if c1 and not c2:
         return "INCONCLUSIVE"
@@ -215,6 +233,14 @@ def _report(exp: dict, run: dict, result: dict, ev_cfg: dict) -> str:
             lines.append(f"| {lab} | {r['champion_pr_auc']:.4f} | {r['challenger_pr_auc']:.4f} | "
                          f"{r['delta']:+.4f} | {_fmt_ci(r['delta_ci'])} | "
                          f"{r['champion_slope']:.3f} → {r['challenger_slope']:.3f} | {flags} |")
+        brier_rows = [(lab, r) for lab, r in c["labels"].items() if r.get("decision_metric") == "brier"]
+        if brier_rows:
+            lines += ["", "Calibration-layer loop: decision metric Brier (lower is better), PR-AUC guard "
+                      "(PLAN open decision 15).", "",
+                      "| label | Brier champion | Brier challenger | Δ | 95% CI | PR-AUC guard |", "|---|---|---|---|---|---|"]
+            lines += [f"| {lab} | {r['champion_brier']:.5f} | {r['challenger_brier']:.5f} | {r['delta_brier']:+.5f} | "
+                      f"[{r['delta_brier_ci'][0]:+.5f}, {r['delta_brier_ci'][1]:+.5f}] | "
+                      f"{'✓' if r['guard_pr_auc_not_worse'] else '✗'} |" for lab, r in brier_rows]
         lines += ["", f"**Verdict: {c['verdict']}**", ""]
     return "\n".join(lines)
 
@@ -246,7 +272,8 @@ def evaluate(config_path: Path) -> dict:
         result["comparison"] = _compare(preds, load_predictions(champ_id), result["labels"],
                                         champ_metrics, ev_cfg, exp["seed"],
                                         run_dir(exp["id"]) / "delta_bootstrap.npz",
-                                        calibration_rule_v2(exp["id"], ev_cfg))
+                                        calibration_rule_v2(exp["id"], ev_cfg),
+                                        exp.get("decision_metric", "pr_auc"))
     else:
         power = {}
         for label in ev_cfg["decision_labels"]:

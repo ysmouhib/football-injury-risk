@@ -178,3 +178,23 @@ def test_no_feature_has_impossible_label_correlation(panel, cfg):
                 continue
             r = np.corrcoef(col[ok], yl[ok])[0, 1]
             assert abs(r) < MAX_ABS_CORRELATION, f"{name} vs {label}: r={r:.3f}"
+
+
+def test_calibration_splits_stay_in_training_group_and_time(panel, cfg):
+    roles = splits.player_roles(panel["player_id"], cfg["splits"]["group_fractions"], cfg["seed"])
+    gap = pd.Timedelta(days=cfg["splits"]["embargo_days"])
+    for label in PRIMARY_LABELS:
+        for origin in cfg["splits"]["validation_seasons"]:
+            cs = splits.calibration_split(panel, cfg, origin, label)
+            val = splits.origin_split(panel, cfg, origin, label)
+            inner, a, b = (panel.iloc[i] for i in (cs.inner_idx, cs.calib_a_idx, cs.calib_b_idx))
+            calib = pd.concat([a, b])
+            assert len(inner) and len(a) and len(b)
+            assert roles.iloc[np.concatenate([cs.inner_idx, cs.calib_a_idx, cs.calib_b_idx])].eq("train").all()
+            val_players = set(panel["player_id"].iloc[val.eval_idx])
+            assert val_players.isdisjoint(calib["player_id"]) and val_players.isdisjoint(inner["player_id"])
+            assert set(a["player_id"]).isdisjoint(b["player_id"])
+            horizon = pd.Timedelta(days=cs.horizon_days)
+            assert (inner["t"] + horizon).max() + gap <= calib["t"].min(), cs.name
+            assert (calib["t"] + horizon).max() + gap <= panel["t"].iloc[val.eval_idx].min(), cs.name
+            assert set(calib["season"]) == {origin - 1}
