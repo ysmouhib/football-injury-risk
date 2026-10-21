@@ -1,0 +1,26 @@
+id: exp-0022
+title: Champion with intercept refitted per season on the deployed model
+stage: 4
+hypothesis: >-
+  Refitting the calibration intercept each season on the deployed model's own
+  scores of the last training season (slope fixed at 1) brings the validation
+  calibration slope closer to 1 at both horizons than the Platt map learned from
+  the inner model, without hurting discrimination or Brier.
+champion: exp-0018
+data_config: configs/data.yaml
+features: v0+history+context
+labels: [y7, y28]
+seed: 20261020
+# Calibration-layer loop under PLAN decision 16 (reading in decision 17): one controlled change vs
+# exp-0018, the calibration block (intercept-only, fitted on the deployed model's scores of half A
+# of season V - 1 instead of a Platt map from the inner model).
+decision_metric: slope
+calibration:
+  method: intercept
+  fit_on: deployed
+model:
+  kind: logistic
+  params:
+    C: 1.0
+    class_weight: balanced
+    max_iter: 2000
