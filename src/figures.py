@@ -321,3 +321,64 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+def holdout_figures(path=None) -> None:
+    """Reliability and decision curves of the one-shot holdout evaluation (the evaluation protocol §6.2)."""
+    from .final_run import FINAL_DIR
+
+    r = json.loads(((path or FINAL_DIR / "holdout") / "results.json").read_text(encoding="utf-8"))
+    spec = r["spec"]
+    champion, comparator, surv = spec["champion"], spec["comparators"][0], spec["survival_champion"]
+    pops = {"in_season": "in-season Sep–Apr (primary)", "all_weeks": "all weeks (secondary)"}
+
+    fig, axes = plt.subplots(1, 2, figsize=(7.2, 3.4))
+    for ax, label in zip(axes, ("y7", "y28")):
+        top = 0
+        for colour, (pop, name) in zip(SERIES, pops.items()):
+            t = pd.DataFrame(r["labels"][label][pop]["champion"]["reliability"])
+            ax.plot(t["mean_predicted"], t["observed"], "-o", color=colour, lw=LINE, ms=MARKER, mec=SURFACE,
+                    mew=1.2, label=name)
+            top = max(top, t["mean_predicted"].max(), t["observed"].max())
+        lim = top * 1.08
+        ax.plot([0, lim], [0, lim], color=AXIS, lw=1)
+        ax.set_xlim(0, lim), ax.set_ylim(0, lim)
+        c = r["labels"][label]["in_season"]["champion"]
+        ax.set_title(f"{label[1:]}-day: slope {c['calibration_slope']['value']:.2f}, "
+                     f"intercept {c['calibration_intercept']['value']:+.2f} (in-season)", loc="left", fontsize=8.5)
+        ax.set_xlabel("mean predicted risk (decile)")
+        ax.set_ylabel("observed injury rate")
+    axes[0].legend(loc="upper left", fontsize=7.5)
+    fig.suptitle(f"Holdout 2024/25 calibration of the champion {champion}", x=0.01, ha="left", color=INK)
+    fig.tight_layout()
+    _save(fig, "fig10_holdout_reliability")
+
+    fig, axes = plt.subplots(2, 2, figsize=(7.2, 5.8))
+    for row, (pop, pname) in enumerate(pops.items()):
+        for col, (label, xmax) in enumerate((("y28", 0.25), ("y7", 0.08))):
+            ax = axes[row, col]
+            dc = r["labels"][label][pop]["decision_curve"]
+            pts = np.array(dc["thresholds"])
+            keep = pts <= xmax
+            ci = np.array(dc["champion_nb_ci"])
+            ax.fill_between(pts[keep], ci[keep, 0], ci[keep, 1], color=SERIES[0], alpha=0.12, lw=0)
+            for colour, (m, name) in zip(SERIES, ((champion, f"{champion} champion"),
+                                                  (comparator, f"{comparator} history only"),
+                                                  (surv, f"{surv} survival"))):
+                ax.plot(pts[keep], np.array(dc["net_benefit"][m])[keep], color=colour, lw=LINE, label=name)
+            ax.plot(pts[keep], np.array(dc["treat_all"])[keep], color=MUTED, lw=1, label="treat all")
+            ax.axhline(0, color=AXIS, lw=1)
+            peak = max(np.array(dc["net_benefit"][champion])[keep].max(), 1e-4)
+            ax.set_ylim(-0.25 * peak, peak * 1.2)
+            ax.set_xlim(0, xmax)
+            if dc["useful_range"]:
+                ax.axvspan(*dc["useful_range"], color=GRID, alpha=0.5, lw=0)
+            prevalence = r["labels"][label][pop]["champion"]["prevalence"]["value"]
+            ax.set_title(f"{label[1:]}-day, {pname}\nprevalence {prevalence:.1%}", loc="left", fontsize=8.5)
+            ax.set_xlabel("threshold probability")
+            ax.set_ylabel("net benefit")
+    axes[0, 0].legend(loc="upper right", fontsize=7)
+    fig.suptitle("Holdout 2024/25 decision curves (shaded: range where the champion beats both defaults)",
+                 x=0.01, ha="left", color=INK)
+    fig.tight_layout()
+    _save(fig, "fig11_holdout_decision_curves")
