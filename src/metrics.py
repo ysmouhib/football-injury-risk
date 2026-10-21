@@ -46,16 +46,31 @@ def _logit(p) -> np.ndarray:
     return np.log(p / (1 - p))
 
 
+def _loglik(X: np.ndarray, y: np.ndarray, w: np.ndarray, offset: np.ndarray, beta: np.ndarray) -> float:
+    eta = X @ beta + offset
+    return float(np.sum(w * (y * eta - np.logaddexp(0, eta))))
+
+
 def _newton_logistic(X: np.ndarray, y: np.ndarray, w: np.ndarray, offset: np.ndarray,
-                     iters: int = 50) -> np.ndarray:
+                     iters: int = 100) -> np.ndarray:
+    """Weighted logistic MLE by Newton's method; a step is halved only if it would lower the
+    likelihood (undamped Newton can overshoot on extreme, compressed predictions)."""
     beta = np.zeros(X.shape[1])
+    ll = _loglik(X, y, w, offset, beta)
     for _ in range(iters):
         mu = 1 / (1 + np.exp(-(X @ beta + offset)))
         grad = X.T @ (w * (y - mu))
         hess = (X * (w * mu * (1 - mu))[:, None]).T @ X
         step = np.linalg.solve(hess, grad)
-        beta += step
-        if np.abs(step).max() < 1e-10:
+        scale = 1.0
+        while True:
+            candidate = beta + scale * step
+            new_ll = _loglik(X, y, w, offset, candidate)
+            if new_ll >= ll or scale < 1e-6:
+                break
+            scale /= 2
+        beta, ll = candidate, new_ll
+        if np.abs(scale * step).max() < 1e-10:
             break
     return beta
 

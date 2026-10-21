@@ -1,0 +1,29 @@
+id: exp-0015
+title: XGBoost-AFT with Weibull loss, v0+history (survival challenger)
+stage: 3
+arm: survival
+hypothesis: >-
+  An XGBoost AFT model whose loss matches the near-constant injury hazard seen
+  in the training data (extreme-value / Weibull, scale 1.1) improves the
+  validation time-dependent C-index over the Random Survival Forest champion.
+champion: exp-0013
+data_config: configs/data.yaml
+features: v0+history
+outcome: surv90
+seed: 20261020
+# One controlled change vs exp-0013: the model block. Differs from exp-0014 only in
+# the AFT distribution and scale, fixed from training-row Kaplan-Meier (PLAN A9b).
+model:
+  kind: xgb_aft
+  params:
+    n_estimators: 400
+    learning_rate: 0.03
+    max_depth: 6
+    min_child_weight: 50
+    subsample: 0.8
+    colsample_bytree: 0.8
+    reg_lambda: 1.0
+    aft_loss_distribution: extreme
+    aft_loss_distribution_scale: 1.1
+    tree_method: hist
+    nthread: 4
