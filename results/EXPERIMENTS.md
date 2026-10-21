@@ -1265,3 +1265,43 @@
   the tiers miss are goalkeepers (injured coverage 0.55) and players aged ≤ 23 (0.83); their overall
   coverage looks high only because uninjured weeks dominate. Defenders' overall coverage CI [0.827,
   0.901] includes 0.90.
+
+### publication-2026-10-21 — README check and evidence published (owner request)
+- The public README (owner commit 6d28188) was checked against this log. The headline holdout
+  numbers were correct. Corrected: players per season (was "~670"; 673 is the test group), test count
+  (67 → 78), Python requirement (3.10+ → 3.12), the 28-day "lead time" read as early warning, the
+  subgroup-coverage inference (reversed; see the exp-0025 addendum), goalkeepers inside the 0.14–0.18
+  range, "prospective validation is now running" (it is not), "arbitrary week, bit for bit" (one
+  week tested), LaLiga reporting artifact stated as fact, and untested advice (per-squad/per-league
+  intercept refits; "recalibrate more often", which exp-0026 contradicts). Rounding: 41% → 40%;
+  realised holdout lifts stated next to the targets.
+- Owner rulings: publish an aggregate evidence pack plus the logs, and fix, commit and push the README.
+  Pushed to origin/main as ea8f617 (`results/`, 213 files) and 926fe7a (README). `.gitignore` local-only
+  patterns anchored to the repository root so published copies under `results/` are tracked.
+- Published: final-run results, rehearsal checks, one-shot marker, frozen-model manifest,
+  per-experiment metrics/run records/bootstrap draws, Stage-7 analyses, reports, figures, and copies of
+  EXPERIMENTS.md, FINAL_RUN.md and MODEL_CARD.md. In those copies, references to the private pre-plan
+  and the instruction file are reworded and nothing else is changed. A commit-id mapping is
+  content-verified: the config sha256 recorded at run time equals the config at each rewritten commit
+  for exp-0001…0023, and the final-run spec sha256 equals `configs/final_run.yaml` at e75b51e.
+- Withheld: datasets, per-player predictions and calibration rows, fitted model files, individual
+  local explanations (figure 5) and ICE curves (re-identification risk), PLAN.md, DATA_CARD.md,
+  EVALUATION_PROTOCOL.md.
+
+### exp-0030 — Injury rate by predicted-risk group on the holdout (README figure)
+- Date / Stage: 2026-10-21 / Stage 7 addendum (analysis only; owner request: a README for
+  non-specialists built on the figures that carry the results).
+- Question (descriptive): on the in-season holdout, how often were players injured in each tenth of
+  the frozen champion's predicted risk?
+- Change vs champion: none — frozen exp-0018; `configs/exp-0030.yaml`; code 9218d2f, report fix
+  0d12033, run at 0d12033 (clean). Groups are the final run's pre-registered reliability-table bins.
+  The point estimates equal the published reliability table (checked in code); the only addition is
+  the player-cluster CIs (1000 resamples, seed 20261020).
+- Results (28-day, 15,355 player-weeks, 565 players, average 0.0913): injury rate by group (lowest →
+  highest) 0.031 [0.017, 0.049], 0.040, 0.057, 0.063, 0.064, 0.085, 0.134, 0.108, 0.136, **0.195 [0.156,
+  0.237]**. Highest vs lowest group **6.25× [3.72, 12.25]**; highest group vs average 2.14×. 7-day (15,435
+  player-weeks, average 0.0245): 0.0078 [0.0038, 0.0123] → 0.0525 [0.0402, 0.0651]; ratio 6.75× [3.97,
+  13.95]. Full table: `reports/experiments/exp-0030.md`; figure `reports/figures/exp-0030_risk_groups.png`.
+- Verdict: none (analysis only).
+- Notes: the rise is not perfectly monotone (group 7 > group 8 at both horizons; the CIs overlap). The
+  ratio's CI is wide because the extreme groups hold about 1,540 player-weeks each.

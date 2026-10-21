@@ -1,174 +1,176 @@
-# Football Injury Risk Prediction from Open Data
+# Football injury risk from public data
 
-Predicting time-loss injuries in professional football players using only
-publicly available data: injury histories, appearances, and player info.
-No club GPS, medical, or training-load data.
+**A weekly injury-risk score for every player in Europe's top five leagues, built only from public
+records and tested on a full season it had never seen.**
 
-## What it does
+It needs no GPS, no wellness questionnaires and no medical files: only injury history, appearances
+and basic player details that anyone can look up. It is a research project, not medical advice.
 
-- Builds a player-week panel (1.29 M player-weeks, 9,967 players; about 3,000–3,500
-  players per season, ~2,200 at risk in a given week) across top-5 European leagues
-  (2014/15–2024/25).
-- Predicts injury within the next 7 and 28 days (logistic regression with
-  Platt calibration) and time-to-injury (random survival forest).
-- Honest evaluation: chronological, player-grouped splits; the 2024/25
-  season was held out and scored exactly once.
-- Holdout, in-season: 28-day PR-AUC 0.158 (prevalence 9.1%), ROC-AUC 0.66,
-  calibration slope 0.96. Beats the first-stage logistic baseline (exposure +
-  demographics) by +0.044 PR-AUC [0.023, 0.068]; beats treat-all/treat-none
-  on decision curves at 7–17% risk thresholds.
-  Evidence: [results/](results/README.md).
-- configs/ contains every experiment (exp-0001 … exp-0029), one YAML each.
+## The result in one picture
 
-## What it does not do
+![Injury rate by predicted-risk group, 2024/25](results/figures/exp-0030_risk_groups.png)
 
-- Its gain over simple models is modest: in-season it is no better than injury
-  history + exposure alone (28-day PR-AUC difference −0.003 [−0.011, +0.004]);
-  tree models never beat logistic regression here.
-- Short-horizon prediction is weak (7-day PR-AUC 0.046 vs 2.5% prevalence),
-  and 7-day conformal coverage fails in-season (86% vs the 90% target).
-- Part of what looks like signal across all weeks is the football calendar
-  (off-season weeks are near-automatic negatives).
-- No medical or performance advice. Research code.
+The model was built on ten seasons (2014/15–2023/24). It was then tested once on 2024/25, a
+season it had never seen, and on players kept aside from the start. Every Sunday it ranked the
+players who were not injured at the time, and we checked who was injured (out for at least 7 days)
+in the following 28 days:
 
-## Layout
+- **The 10% of players it rated most at risk: 19.5% were injured**, about one in five.
+- **The 10% it rated safest: 3.1%**, about one in thirty.
+- **The average player: 9.1%**, about one in eleven.
 
-- src/      pipeline: data, features, train, evaluate, report
-- tests/    78 tests, including data-leakage guards
-- configs/  one YAML per experiment
-- results/  published evidence: metrics, figures, experiment log, pre-registration, model card
+The highest-risk group was injured **about six times as often** as the lowest-risk group. The
+black lines on each bar show the range allowed by chance; the ratio is at least 3.7× even at the
+cautious end of that range. Over the 7-day horizon the pattern is the same: 5.2% against 0.8%.
 
-## Usage
+## What this means for a squad of 25
+
+You choose how many players to flag. The thresholds below were fixed on the previous season,
+before the test, and the results were then measured once on 2024/25 (playing season, September–April):
+
+| Setting | Players flagged per week | Flagged players injured within 28 days | Share of all injuries the flags caught |
+|---|---|---|---|
+| Short list | under 1 | about 1 in 4 (22.9%) | 8% |
+| Balanced | about 5 | about 1 in 6 (16.6%) | 43% |
+| Wide net | about 13 | about 1 in 8 (13.1%) | 77% |
+| No model (any player) | — | about 1 in 11 (9.1%) | — |
+
+![Alarms per week and injuries caught, per 25-player squad](results/figures/exp-0024_operational.png)
+
+With the balanced setting you review about five players a week. Those players are almost twice as
+likely as an average teammate to be injured in the next month, and their names account for about
+four in ten of the squad's injuries. That makes it a way to decide where staff attention goes
+first. It does not say who will get hurt.
+
+## It holds up: every season, every league, every type of player
+
+![Ranking quality season by season, 2015/16 to 2023/24](results/figures/exp-0026_seasons.png)
+
+*Each dot shows how well the model ranked players in one season; the small tick shows what guessing
+would score. In every season the dot sits well to the right of its tick.*
+
+- **Every season since 2015/16** was better than chance, including the two COVID seasons. The test
+  season 2024/25 was an ordinary year for the model, not a lucky one.
+- **Every league** (Premier League, LaLiga, Serie A, Bundesliga, Ligue 1), **every position**,
+  every age group, and players who played a lot or little the season before: it beat chance in
+  each group.
+- **It beats the closest workload rule this data allows.** A rule that flags players whose playing
+  time jumped compared with earlier seasons had no predictive value at all on the same weeks.
+- **It stays simple on purpose.** More complex machine-learning methods (gradient-boosted trees) were
+  tested against it and never did better, so the model stays transparent.
+
+## How it works, in plain words
+
+Every Sunday, for each player registered with a top-five-league club and not currently injured, the
+model estimates the chance of an injury that keeps him out for at least 7 days and starts within
+the next 7 days, or within the next 28 days. It looks at:
+
+- **Injury history:** how many injuries, how recent, which body parts (hamstring, groin, knee, ankle
+  …) and how long since he returned.
+- **Playing time** in the last two seasons: appearances, starts, minutes.
+- **Profile and context:** age, height, position, league, and the point in the season.
+
+The method is logistic regression, a long-established statistical method whose reasoning can be
+inspected, followed by a calibration step so that "10% risk" means roughly 10%. It was built on
+1.29 million player-weeks of public Transfermarkt records (9,967 players, 2014/15–2024/25).
+
+**Why the numbers can be trusted:**
+- **One-shot test.** The test season and the test players were locked away until the end, and the
+  test was run exactly once. Its full setup was fixed and saved before it ran, and nothing was
+  adjusted afterwards.
+- **Every experiment logged.** All 30 experiments are recorded with their settings, including the
+  ideas that failed. Chance was accounted for in every comparison.
+- **Evidence is public.** All results, figures and the full experiment log are in [results/](results/README.md).
+
+## What it cannot do (please read before using)
+
+- **It is a screening aid, not a diagnosis.** Even in the highest-risk group, four out of five
+  players were not injured in the next 28 days. Most flags will be false alarms.
+- **It mostly tells you *who* is injury-prone, not *when*.** Scores change slowly from week to week,
+  so a flagged player was usually already flagged in earlier weeks. It gives no extra warning beyond
+  its 7- or 28-day window.
+- **It is weak over the 7-day horizon.** Even the highest-risk group's injury rate over one week
+  is about 5%.
+- **It cannot see what clubs see.** It has no training load, GPS, sleep, wellness or medical data,
+  and no match-by-match minutes. For the same reason it could **not** be compared with the
+  acute:chronic workload ratio that many clubs use. That comparison needs dated minutes.
+- **Absolute levels drift.** In 2024/25, a season with more injuries than usual, it predicted 7.4%
+  against 9.1% observed. In LaLiga it predicted too high (7.6% against 5.7%). Rankings held up better
+  than levels.
+- **Its low / uncertain / high risk tiers are less reliable for some groups.** Players aged 29+ and
+  forwards get more false alarms. Goalkeepers and players aged 23 or under have more injuries
+  missed.
+- **It has not been tested live yet.** A tool to log weekly scores ahead of time is built and
+  tested. It can start once the data is refreshed.
+- **It covers men's senior football in the top five leagues only.**
+- **The scores are health data** about identifiable people (GDPR Art. 9). Do not publish individual
+  scores. Use them with the medical staff, never on their own for selection, contract or transfer
+  decisions.
+
+What real use would take: an official dated data feed (the inputs are simple and port directly), a
+check of the risk level against the club's own recent injury rate, and an agreed action for flagged
+players. A score without an action has no value.
+
+---
+
+## For data scientists
+
+**Primary result.** One-shot holdout 2024/25: test player group (20%, 673 players), in-season
+weeks (Sep–Apr, primary). 95% player-cluster bootstrap CIs.
+
+| Metric | 7-day | 28-day |
+|---|---|---|
+| Prevalence | 0.0245 | 0.0913 |
+| PR-AUC (primary metric) | 0.046 [0.038, 0.058] | 0.158 [0.134, 0.188] |
+| ROC-AUC | 0.66 | 0.66 |
+| Calibration slope / intercept | 0.94 / +0.20 | 0.96 / +0.23 |
+| Δ PR-AUC vs first-stage logistic baseline (exposure + demographics) | +0.015 [+0.007, +0.025] | +0.044 [+0.023, +0.068] |
+| Δ PR-AUC vs injury-history model without context features | −0.002 [−0.004, +0.002] | −0.003 [−0.011, +0.004] |
+| Decision curve: net benefit above treat-all and treat-none | thresholds 2–4% | thresholds 7–17% |
+| Mondrian conformal coverage, α = 0.10 | 0.861 (below nominal) | 0.884 |
+
+- All weeks (secondary): PR-AUC 0.042 / 0.145. Part of the all-weeks gain is the football calendar,
+  because off-season weeks are near-certain negatives.
+- Random survival forest (time to injury): C-index 0.64. It ranks like the classifier and needs no
+  post-hoc calibration step.
+- LightGBM never beat logistic regression; in the survival arm, XGBoost-AFT did not beat the random
+  survival forest.
+
+![Decision curves on the holdout, with the season-scale workload-ratio flag](results/figures/fig11_holdout_decision_curves.png)
+
+**Method.**
+- **Splits.** Chronological rolling origins with player-grouped splits (players partitioned once
+  into train / validation / test). Outcome-window purging and a 7-day embargo.
+- **Leakage tests** gate every training run.
+- **Promotion rule.** A challenger needs a paired player-cluster bootstrap CI on ΔPR-AUC that
+  excludes 0 at both horizons, plus a calibration veto.
+- **Calibration.** Platt scaling learned from an inner model's out-of-time scores on half of the
+  previous season.
+- **Final run.** The configuration was committed before the holdout was scored (commit `e75b51e`).
+
+The full log, the pre-registration, the model card and a claim-by-claim index of the evidence are in
+[results/](results/README.md). The practitioner analyses are exp-0024 to exp-0030.
+
+**Layout.**
+- `src/`: pipeline (data, features, train, evaluate, report, practitioner analyses, prospective log)
+- `tests/`: 78 tests, including data-leakage guards
+- `configs/`: one YAML per experiment
+- `results/`: published evidence
+
+**Usage.**
 
     python -m src.cli data
     python -m src.cli features
     python -m src.cli train configs/exp-0018.yaml
     python -m src.cli evaluate configs/exp-0018.yaml
     python -m src.cli freeze                          # rebuild and verify the deployed model
-    python -m src.cli analyse configs/exp-0024.yaml   # practitioner analyses (exp-0024 … exp-0028)
+    python -m src.cli analyse configs/exp-0024.yaml   # practitioner analyses (exp-0024 … exp-0030)
     python -m src.cli prospective --date YYYY-MM-DD   # append-only weekly risk log
 
-(Equivalent make targets exist for the first four if you have make installed.)
+Equivalent make targets exist for the first four if you have make installed.
 
-## Data
+**Data.** The data is derived from public web records (player injury and appearance data). Raw and
+derived datasets are not redistributed in this repository.
 
-Derived from public web records (player injury and appearance data).
-Raw and derived datasets are not redistributed in this repo.
-
-## Requirements
-
-Python 3.12 (tested with 3.12.10; the pinned numpy needs 3.12 or later), see requirements.txt.
-
-## For practitioners: six questions, six measured answers
-
-All numbers are out-of-sample: either the one-shot 2024/25 holdout (in-season weeks, 565 players,
-~440 at risk per week) or the 2015/16–2023/24 development seasons under rolling-origin refits.
-Each answer's evidence is listed in [results/](results/README.md); the analyses re-run from
-configs exp-0024 to exp-0029, given the data (which is not redistributed).
-
-**1. If I use it, how many alarms do I get — and how many are real?**
-
-Thresholds were fixed in advance on calibration data (2023/24), then measured once on the
-holdout. Per 25-man squad, in-season ([exp-0024](results/reports/exp-0024.md)):
-
-| Setting | Flags / week | Precision | Injuries caught | Median days from first flag to injury |
-|---|---|---|---|---|
-| 7-day, target 2× base rate | ~5 | 4.6% | 3.2 of 7.9 per 90 days (40%) | 5 |
-| 28-day, target 2× base rate | ~5 | 16.6% | 3.7 of 8.5 per 90 days (43%) | 24 |
-| 28-day, target 1.5× base rate | ~13 | 13.1% | 6.6 of 8.5 per 90 days (77%) | 24 |
-| 28-day, target 3× base rate | ~0.6 | 22.9% | 0.7 of 8.5 per 90 days (8%) | 23 |
-
-The targets were multiples of the 2023/24 base rate. On the holdout, where injuries were more
-frequent, the 1.5×, 2× and 3× settings delivered 1.4×, 1.8× and 2.5–2.8× the holdout base rate.
-
-This is a screening signal, not a diagnosis: at the 2× setting you review about five players per
-week and catch about two injuries in five. Push precision higher and the model goes quiet; push
-recall higher and you review half the squad every week. The last column is not early warning:
-scores change slowly, so for 93–97% of injuries caught at 28 days the player was already flagged
-in the first week whose window covered the injury, and the number is capped by the horizon (7 or
-28 days).
-
-**2. Does it work equally well for every player?**
-
-Mostly yes. Holdout 28-day PR-AUC sits between 0.14 and 0.18 for every outfield position, age band
-and half of last-season minutes, and every subgroup's confidence interval lies above its base rate:
-no dead subgroup ([exp-0025](results/reports/exp-0025.md)). The open data has no recent workload,
-so "usage" here means minutes in the previous season.
-
-Caveats:
-- **Goalkeepers are the weakest slice** (0.11; 59 players).
-- **The 90% risk tiers are not guaranteed per subgroup.** For players aged ≥29 (82% coverage) and
-  forwards (85%), the shortfall is extra false alarms: uninjured weeks placed in the high-risk tier.
-  For goalkeepers and players aged ≤23 it is injuries the tiers miss: only 55% and 83% of their
-  injury weeks are covered.
-- **Risk is under-predicted in every position, age band and minutes half,** by about a fifth
-  overall (mean predicted 7.4% vs 9.1% observed at 28 days), because 2024/25 had more injuries than
-  the training seasons. A local level adjustment (intercept refit on recent data) is the obvious
-  remedy, but it is untested here. The intercept-refit variants tried in development (exp-0019 to
-  exp-0023) did not pass the promotion rule, and one squad gives very few injuries to fit on.
-
-**3. Is performance stable across seasons?**
-
-For ranking, yes ([exp-0026](results/reports/exp-0026.md)). Across nine development seasons,
-in-season lift over prevalence ranged 1.5–2.5× (7-day) and 1.5–2.2× (28-day), with no dead
-season. The 2024/25 holdout (1.9× / 1.7×) was a typical year, not a lucky one.
-
-COVID seasons ranked injuries as well as normal years, but calibration broke. Across all weeks of
-2019/20 the slopes fell to ~0.7 (in-season they stayed ~0.9). The yearly recalibration learned on
-that season then left 2020/21 under-confident (slope 1.27 at 7 days). Recalibrating on a disrupted
-season carries the disruption forward, so check calibration before reusing a map learned on an
-abnormal season. Calibration also drifts in normal years: at 28 days the in-season slope's
-confidence interval excludes 1 in 2016/17, 2018/19 and 2023/24.
-
-**4. Does it work in every league?**
-
-All top-5 leagues beat their own prevalence, and the confidence intervals overlap too much to rank
-them ([exp-0027](results/reports/exp-0027.md)). Two caveats:
-- **LaLiga is over-predicted, with scores too uniform** (28-day slope 1.46 [1.05, 2.03]). Its
-  recorded injury rate is 5.7% against 8–11% in the other leagues; lower public reporting is one
-  possible explanation, not tested.
-- **Serie A's 28-day coverage runs below nominal** (83%).
-
-The model already includes the league; a further per-league adjustment was not tested.
-
-**5. Has it been validated prospectively?**
-
-No. That is the one proof still outstanding. The logging harness is built and tested but not yet
-running. `python -m src.cli prospective --date YYYY-MM-DD` scores every active player and appends
-timestamped, hash-stamped predictions (player, week, both risk scores, model and code hashes).
-
-It needs a data snapshot covering the date. The current snapshot ends 2026-09-28 and later dates
-are refused, so live weekly logging starts with the next data refresh. The only run so far replays
-19 Oct 2025 (2,202 players) to test the path. A prospective evaluation would be pre-registered
-separately after one full season.
-
-Reproducibility checks:
-- Rebuilding the panel from raw data for a historical week (2023-10-15, 2,176 players) reproduces
-  every stored feature value.
-- Rebuilding the frozen champion from a clean checkout reproduces every holdout prediction and both
-  calibration maps exactly
-  ([manifest](results/final_run/frozen_champion_manifest.json)).
-
-**6. How does it compare to what clubs already do, e.g. ACWR?**
-
-The classic 7:28-day acute:chronic workload ratio needs dated minutes, which this open dataset
-does not contain. It is implemented and unit-tested (`src/acwr.py`) but cannot be scored here
-([exp-0028](results/reports/exp-0028.md)).
-
-The computable season-level workload ratios show no skill at all:
-- **Precision is below the base rate** (7.5% vs 9.1% at 28 days).
-- **They never beat treat-all/treat-none on decision curves.**
-- **The model beats them** by +0.074 PR-AUC at 28 days [+0.050, +0.100].
-
-A head-to-head against real weekly ACWR (or GPS load) requires a dated-minutes feed, the first
-thing to plug in below.
-
-### What real deployment would take
-
-- An official dated data feed (the features are appearances, minutes, injury history and basic
-  profile data — they port directly)
-- A level (intercept) adjustment on recent local data — likely needed (questions 2 and 4) but untested
-  here
-- A defined intervention protocol (what staff do when a player is flagged) — a risk score without
-  an action has no value
-- GDPR Art. 9 handling: injury-risk scores about identified athletes are health data
+**Requirements.** Python 3.12 (tested with 3.12.10; the pinned numpy needs 3.12 or later); see
+`requirements.txt`.
