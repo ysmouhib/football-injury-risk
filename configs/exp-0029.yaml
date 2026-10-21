@@ -1,0 +1,18 @@
+id: exp-0029
+title: Prospective logging harness for the frozen champion
+stage: 7
+question: >-
+  Can the frozen champion score every active player as of a given date with exactly the
+  training-time feature code, and log the scores append-only with the model and code versions?
+# Harness, not an evaluation: no labels are read and nothing is scored against outcomes.
+# Design: PLAN decision 24. Run as: python -m src.cli prospective --date YYYY-MM-DD
+champion: exp-0018
+data_config: configs/data.yaml
+labels: [y7, y28]
+output: data/prospective/<date>.csv
+columns: [player_id, week, p7, p28, model_hash, git_hash, scored_at, features_sha256]
+# Smoke run inside 2025/26, the newest season the local snapshot covers (prediction Sunday
+# 2025-10-19). The snapshot was taken later (2026-09-29), so this is a retrospective replay of the
+# logging path, not a live prospective score.
+smoke_run_date: "2025-10-22"
+seed: 20261020
