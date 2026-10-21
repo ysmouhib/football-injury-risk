@@ -522,3 +522,35 @@ def seasons(result: dict, cfg: dict) -> None:
                  x=0.01, ha="left", color=INK)
     fig.tight_layout(rect=(0, 0.05, 1, 1))
     _save(fig, f"{cfg['id']}_seasons")
+
+
+def risk_groups(result: dict, cfg: dict) -> None:
+    """Observed injury rate by predicted-risk group on the holdout (exp-0030), for a general audience."""
+    label = cfg["figure_label"]
+    o = result["labels"][label]
+    groups = o["groups"]
+    x = np.arange(1, len(groups) + 1)
+    rate = np.array([g["injury_rate"] for g in groups]) * 100
+    ci = np.array([g["injury_rate_ci"] for g in groups]) * 100
+    fig, ax = plt.subplots(figsize=(7.2, 3.9))
+    ax.bar(x, rate, width=0.68, color=SERIES[0], edgecolor=SURFACE, lw=1)
+    ax.errorbar(x, rate, yerr=[rate - ci[:, 0], ci[:, 1] - rate], fmt="none", ecolor=INK_2, elinewidth=1)
+    average = o["average"] * 100
+    ax.axhline(average, color=MUTED, lw=1, ls="--")
+    ax.annotate(f"season average {average:.1f}%", (0.45, average), xytext=(0, 4), textcoords="offset points",
+                ha="left", va="bottom", fontsize=8, color=INK_2)
+    for i in (0, len(groups) - 1):
+        ax.annotate(f"{rate[i]:.1f}%", (x[i], ci[i, 1]), xytext=(0, 3), textcoords="offset points", ha="center",
+                    va="bottom", fontsize=9, color=INK, fontweight="bold")
+    ax.set_xticks(x, ["lowest\nrisk"] + [str(i) for i in x[1:-1]] + ["highest\nrisk"])
+    ax.set_xlim(0.4, len(groups) + 0.6)
+    ax.set_ylim(0, ci[:, 1].max() * 1.15)
+    ax.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(decimals=0))
+    ax.set_ylabel(f"injured within {label[1:]} days")
+    ax.set_xlabel("predicted-risk group (each holds 10% of player-weeks)")
+    ax.grid(axis="x", visible=False)
+    t = o["top_vs_bottom"]
+    ax.set_title(f"2024/25, a season the model never saw: the highest-risk group was injured "
+                 f"{t['ratio']:.1f}× as often as the lowest", loc="left", fontsize=9.5)
+    fig.tight_layout()
+    _save(fig, f"{cfg['id']}_risk_groups")

@@ -1,0 +1,18 @@
+id: exp-0030
+title: Injury rate by predicted-risk group on the holdout
+stage: 7
+analysis: risk_groups
+question: >-
+  On the 2024/25 holdout (in-season), how often were players injured in each tenth of the frozen
+  champion's predicted risk, and how much more often in the highest-risk tenth than in the lowest?
+# Frozen champion (PLAN decision 19); analysis only, no model-selection decision. Descriptive
+# companion to the final run's pre-registered reliability table (same ten equal-count groups,
+# checked in code), adding player-cluster confidence intervals for a plain-language summary.
+champion: exp-0018
+data_config: configs/data.yaml
+population: in_season
+labels: [y28, y7]
+groups: 10
+figure_label: y28
+seed: 20261020
+n_resamples: 1000

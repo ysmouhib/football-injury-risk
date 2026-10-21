@@ -556,6 +556,61 @@ def _acwr_report(r: dict, cfg: dict) -> str:
     return "\n".join(lines)
 
 
+# --- exp-0030: injury rate by risk group ------------------------------------------------
+
+def risk_groups(cfg: dict, path) -> dict:
+    """Observed injury rate per predicted-risk group on the holdout, with player-cluster CIs.
+
+    Groups are the final run's reliability-table bins (equal-count groups of the ranked scores),
+    so the point estimates equal the published reliability table.
+    """
+    n, seed, k = cfg["n_resamples"], cfg["seed"], cfg["groups"]
+    final = json.loads((FINAL_DIR / "holdout" / "results.json").read_text(encoding="utf-8"))
+    result = {**_provenance(cfg, path), "groups": k, "population": cfg["population"], "labels": {}}
+    for label in cfg["labels"]:
+        rows = holdout_rows(label)
+        rows = rows[rows["t"].dt.month.isin(_months(cfg["population"]))].reset_index(drop=True)
+        y, p = rows["y"].to_numpy(float), rows["p"].to_numpy(float)
+        group = pd.qcut(pd.Series(p).rank(method="first"), k, labels=False).to_numpy()
+        players, index = _clusters(rows["player_id"].to_numpy())
+        hits, count = np.zeros((len(players), k)), np.zeros((len(players), k))
+        np.add.at(hits, (index, group), y)
+        np.add.at(count, (index, group), 1)
+        point = hits.sum(axis=0) / count.sum(axis=0)
+        reference = [b["observed"] for b in final["labels"][label][cfg["population"]]["champion"]["reliability"]]
+        if not np.allclose(point, reference, rtol=0, atol=1e-12):
+            raise SystemExit(f"{label}: groups do not reproduce the final run's reliability table")
+        rates = np.vstack([(c @ hits) / (c @ count) for _, c in metrics.resample_counts(len(players), n, seed)])
+        result["labels"][label] = {
+            "rows": len(rows), "players": len(players), "average": float(y.mean()),
+            "groups": [{"group": g + 1, "n": int(count[:, g].sum()), "injuries": int(hits[:, g].sum()),
+                        "mean_predicted": float(p[group == g].mean()), "injury_rate": float(point[g]),
+                        "injury_rate_ci": metrics.percentile_ci(rates[:, g])} for g in range(k)],
+            "top_vs_bottom": {"ratio": float(point[-1] / point[0]),
+                              "ci": metrics.percentile_ci(rates[:, -1] / rates[:, 0])},
+            "top_vs_average": {"ratio": float(point[-1] / y.mean())},
+        }
+    return result
+
+
+def _risk_groups_report(r: dict) -> str:
+    lines = [f"# {r['id']} — injury rate by predicted-risk group (holdout 2024/25, {r['population']})", "",
+             f"{r['groups']} equal-size groups of player-weeks ranked by the frozen champion's risk (the final "
+             "run's reliability-table bins); 95% player-cluster bootstrap CIs.", ""]
+    for label, o in r["labels"].items():
+        t = o["top_vs_bottom"]
+        lines += [f"## {label[1:]}-day — {o['rows']:,} player-weeks, {o['players']} players, average "
+                  f"{o['average']:.4f}; highest vs lowest group {t['ratio']:.2f}× {_ci(t['ci'], '.2f')}", "",
+                  "| group (1 = lowest risk) | player-weeks | injuries | mean predicted | injury rate [95% CI] |",
+                  "|---|---|---|---|---|"]
+        for g in o["groups"]:
+            lines.append(f"| {g['group']} | {g['n']:,} | {g['injuries']} | {g['mean_predicted']:.4f} "
+                         f"| {g['injury_rate']:.4f} {_ci(g['injury_rate_ci'])} |")
+        lines.append("")
+    return "
+".join(lines)
+
+
 # --- dispatch ---------------------------------------------------------------------------
 
 def run(path) -> dict:
@@ -581,6 +636,10 @@ def run(path) -> dict:
         overlay = {(label, pop): (cfg["overlay"]["name"], o["net_benefit"][f"{cfg['overlay']['form']}_flag"])
                    for label, pops in result["labels"].items() for pop, o in pops.items()}
         figures.holdout_figures(overlay=overlay)
+    elif kind == "risk_groups":
+        result = risk_groups(cfg, path)
+        _write(cfg, result, _risk_groups_report(result))
+        figures.risk_groups(result, cfg)
     else:
         raise SystemExit(f"unknown analysis: {kind}")
     return result
