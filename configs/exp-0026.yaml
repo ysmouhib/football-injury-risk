@@ -1,0 +1,18 @@
+id: exp-0026
+title: Per-season stability of the champion pipeline over the development seasons
+stage: 7
+analysis: seasons
+question: >-
+  How stable is the champion pipeline's discrimination from season to season over the
+  development period (2015/16 to 2023/24), and how did the COVID-19 seasons behave?
+# Development seasons only, validation player group only; the holdout season and the test player
+# group are never read. Champion pipeline refitted per season as in the rolling-origin protocol
+# (PLAN decision 23). Analysis only, no model-selection decision.
+champion: exp-0018
+data_config: configs/data.yaml
+seasons: [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+covid_seasons: [2019, 2020]
+populations: [in_season, all_weeks]   # first = primary
+labels: [y7, y28]
+seed: 20261020
+n_resamples: 1000
