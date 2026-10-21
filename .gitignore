@@ -6,8 +6,6 @@ __pycache__/
 .pytest_cache/
 
 # local working documents and generated outputs
-the design notes
-the evaluation protocol
 PLAN.md
 EXPERIMENTS.md
 DATA_CARD.md
