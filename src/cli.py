@@ -1,4 +1,5 @@
-"""Task runner: python -m src.cli {data,features,test,train,evaluate,report} [config]."""
+"""Task runner: python -m src.cli {data,features,test,train,evaluate,report,freeze,analyse} [config]
+and python -m src.cli prospective --date YYYY-MM-DD."""
 
 from __future__ import annotations
 
@@ -49,6 +50,20 @@ def _report(_: Path | None) -> int:
     return 0
 
 
+def _freeze(_: Path | None) -> int:
+    from . import champion
+
+    champion.freeze()
+    return 0
+
+
+def _analyse(config: Path | None) -> int:
+    from . import practice
+
+    practice.run(_require(config))
+    return 0
+
+
 def _require(config: Path | None) -> Path:
     if config is None:
         raise SystemExit("this task needs an experiment config, e.g. configs/exp-0001.yaml")
@@ -62,14 +77,24 @@ TASKS = {
     "train": _train,
     "evaluate": _evaluate,
     "report": _report,
+    "freeze": _freeze,
+    "analyse": _analyse,
 }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(prog="python -m src.cli")
-    parser.add_argument("task", choices=sorted(TASKS))
+    parser.add_argument("task", choices=sorted([*TASKS, "prospective"]))
     parser.add_argument("config", nargs="?", type=Path)
+    parser.add_argument("--date", help="prospective: score as of this date (YYYY-MM-DD)")
     args = parser.parse_args()
+    if args.task == "prospective":
+        from . import prospective
+
+        if not args.date:
+            raise SystemExit("prospective needs --date YYYY-MM-DD")
+        prospective.main(args.date)
+        sys.exit(0)
     sys.exit(TASKS[args.task](args.config))
 
 
