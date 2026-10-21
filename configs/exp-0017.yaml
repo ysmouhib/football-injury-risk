@@ -1,0 +1,22 @@
+id: exp-0017
+title: Champion with isotonic instead of Platt calibration
+stage: 4
+hypothesis: >-
+  A non-parametric isotonic calibration map lowers the validation Brier score
+  further than the Platt map at both horizons without hurting discrimination.
+champion: exp-0016
+data_config: configs/data.yaml
+features: v0+history
+labels: [y7, y28]
+seed: 20261020
+# Calibration-layer loop: decided on the Brier score with a PR-AUC guard (PLAN open
+# decision 15); one controlled change vs exp-0016: calibration method Platt -> isotonic.
+decision_metric: brier
+calibration:
+  method: isotonic
+model:
+  kind: logistic
+  params:
+    C: 1.0
+    class_weight: balanced
+    max_iter: 2000
