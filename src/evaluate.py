@@ -132,6 +132,8 @@ def _compare(preds: pd.DataFrame, champ: pd.DataFrame, own: dict, champ_metrics:
         if rule_v2:
             slopes = metrics.bootstrap_calibration_slope(origins, ev_cfg["n_resamples"], seed)
             draws = tuple(_aggregate_boot(slopes[m], order, how, main) for m in ("champion", "challenger"))
+        if decision_metric == "slope" and draws[0] is None:
+            raise SystemExit("slope-decided loops need the bootstrap calibration rule (v2)")
         cal = calibration_condition(theirs["calibration_slope"], mine["calibration_slope"], *draws, ev_cfg)
         result[label] = {
             "champion_pr_auc": theirs["pr_auc"], "challenger_pr_auc": mine["pr_auc"],
@@ -143,8 +145,7 @@ def _compare(preds: pd.DataFrame, champ: pd.DataFrame, own: dict, champ_metrics:
             "cond2_ci_excludes_zero": ci[0] > 0,
             "cond3_no_slope_regression": cal["cond3_no_slope_regression"],
         }
-        if decision_metric == "brier":
-            # calibration-layer loop (PLAN open decision 15): Brier decides, PR-AUC is a guard
+        if decision_metric in ("brier", "slope"):
             brier = metrics.bootstrap_brier(origins, ev_cfg["n_resamples"], seed)
             brier_dist = (_aggregate_boot(brier["challenger"], order, how, main)
                           - _aggregate_boot(brier["champion"], order, how, main))
@@ -152,13 +153,23 @@ def _compare(preds: pd.DataFrame, champ: pd.DataFrame, own: dict, champ_metrics:
             b_theirs = _aggregate(pd.Series({int(k): v["brier"] for k, v in
                                              champ_metrics["labels"][label]["per_origin"].items()}), how, main)
             b_ci = metrics.percentile_ci(brier_dist, ev_cfg["ci_level"])
-            deltas[label] = brier_dist
             result[label].update({
-                "decision_metric": "brier", "champion_brier": b_theirs, "challenger_brier": b_mine,
+                "decision_metric": decision_metric, "champion_brier": b_theirs, "challenger_brier": b_mine,
                 "delta_brier": b_mine - b_theirs, "delta_brier_ci": b_ci,
-                "cond1_delta_positive": b_mine - b_theirs < 0,
-                "cond2_ci_excludes_zero": b_ci[1] < 0,
                 "guard_pr_auc_not_worse": ci[1] >= 0,
+            })
+        if decision_metric == "brier":
+            # calibration-layer loop under PLAN decision 15 (exp-0016..exp-0019): Brier decides
+            deltas[label] = brier_dist
+            result[label].update({"cond1_delta_positive": b_mine - b_theirs < 0,
+                                  "cond2_ci_excludes_zero": b_ci[1] < 0})
+        elif decision_metric == "slope":
+            # calibration-layer loop under PLAN decision 16 (exp-0020 on): change in |slope - 1| decides
+            deltas[label] = np.abs(draws[0] - 1) - np.abs(draws[1] - 1)
+            result[label].update({
+                "cond1_delta_positive": cal["delta_cal"] > 0,
+                "cond2_ci_excludes_zero": cal["delta_cal_ci"][0] > 0,
+                "guard_brier_not_worse": b_ci[0] <= 0,
             })
     # kept so a deterministic seed repeat can be decided on the pooled draws
     np.savez(boot_path, **deltas)
@@ -170,7 +181,7 @@ def verdict_from(conditions: dict[str, dict]) -> str:
     c1 = all(c["cond1_delta_positive"] for c in conditions.values())
     c2 = all(c["cond2_ci_excludes_zero"] for c in conditions.values())
     c3 = all(c["cond3_no_slope_regression"] for c in conditions.values())
-    guard = all(c.get("guard_pr_auc_not_worse", True) for c in conditions.values())
+    guard = all(v for c in conditions.values() for k, v in c.items() if k.startswith("guard_"))
     if c1 and c2 and c3 and guard:
         return "PROMOTE"
     if c1 and not c2:
@@ -233,6 +244,19 @@ def _report(exp: dict, run: dict, result: dict, ev_cfg: dict) -> str:
             lines.append(f"| {lab} | {r['champion_pr_auc']:.4f} | {r['challenger_pr_auc']:.4f} | "
                          f"{r['delta']:+.4f} | {_fmt_ci(r['delta_ci'])} | "
                          f"{r['champion_slope']:.3f} → {r['challenger_slope']:.3f} | {flags} |")
+        slope_rows = [(lab, r) for lab, r in c["labels"].items() if r.get("decision_metric") == "slope"]
+        if slope_rows:
+            lines += ["", "Calibration-layer loop: decision metric delta_cal = |b_champion - 1| - "
+                      "|b_challenger - 1| (higher is better); guards PR-AUC and Brier (PLAN open decision 16).", "",
+                      "| label | slope champion -> challenger | delta_cal | 95% CI | Brier delta [95% CI] "
+                      "| guards PR-AUC / Brier |", "|---|---|---|---|---|---|"]
+            for lab, r in slope_rows:
+                guards = ("ok" if r["guard_pr_auc_not_worse"] else "FAIL") + " / " + (
+                    "ok" if r["guard_brier_not_worse"] else "FAIL")
+                lines.append(
+                    f"| {lab} | {r['champion_slope']:.3f} -> {r['challenger_slope']:.3f} | {r['delta_cal']:+.4f} | "
+                    f"[{r['delta_cal_ci'][0]:+.4f}, {r['delta_cal_ci'][1]:+.4f}] | {r['delta_brier']:+.6f} "
+                    f"[{r['delta_brier_ci'][0]:+.6f}, {r['delta_brier_ci'][1]:+.6f}] | {guards} |")
         brier_rows = [(lab, r) for lab, r in c["labels"].items() if r.get("decision_metric") == "brier"]
         if brier_rows:
             lines += ["", "Calibration-layer loop: decision metric Brier (lower is better), PR-AUC guard "

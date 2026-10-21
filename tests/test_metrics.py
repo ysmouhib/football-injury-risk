@@ -129,3 +129,12 @@ def test_intercept_calibrator_shifts_only_the_intercept():
     assert cal.a == pytest.approx(-2.5, abs=0.05) and cal.describe()["b"] == 1.0
     q = cal.transform(p)
     assert np.all(np.diff(q[np.argsort(p)]) >= 0)  # strictly rank-preserving map
+
+
+def test_verdict_requires_every_guard():
+    from src.evaluate import verdict_from
+
+    ok = {"cond1_delta_positive": True, "cond2_ci_excludes_zero": True, "cond3_no_slope_regression": True,
+          "guard_pr_auc_not_worse": True, "guard_brier_not_worse": True}
+    assert verdict_from({"y7": ok, "y28": ok}) == "PROMOTE"
+    assert verdict_from({"y7": ok, "y28": {**ok, "guard_brier_not_worse": False}}) == "REJECT"

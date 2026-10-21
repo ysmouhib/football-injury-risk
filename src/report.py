@@ -40,8 +40,8 @@ def _loop_decision(original: dict, repeat: dict, ev_cfg: dict) -> tuple[str, str
         cis.append(f"{label} [{lo:.4f}, {hi:.4f}]")
         # Brier-decided loops improve downwards and carry the PR-AUC guard
         excludes_zero = hi < 0 if conds.get("decision_metric") == "brier" else lo > 0
-        passed &= (conds["cond1_delta_positive"] and conds["cond3_no_slope_regression"]
-                   and conds.get("guard_pr_auc_not_worse", True) and excludes_zero)
+        guards = all(v for k, v in conds.items() if k.startswith("guard_"))
+        passed &= conds["cond1_delta_positive"] and conds["cond3_no_slope_regression"] and guards and excludes_zero
     return ("PROMOTE" if passed else "REJECT"), "pooled bootstrap " + ", ".join(cis)
 
 

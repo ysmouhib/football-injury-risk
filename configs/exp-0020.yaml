@@ -1,0 +1,24 @@
+id: exp-0020
+title: Champion with intercept-only calibration (re-challenge under decision 16)
+stage: 4
+hypothesis: >-
+  Recalibrating the champion's class-weighted scores by an intercept shift only
+  (slope fixed at 1) brings the validation calibration slope closer to 1 at both
+  horizons than the full Platt map, without hurting discrimination or Brier.
+champion: exp-0018
+data_config: configs/data.yaml
+features: v0+history+context
+labels: [y7, y28]
+seed: 20261020
+# Calibration-layer loop under PLAN decision 16: decided on the change in |slope - 1| at both
+# horizons; guards PR-AUC and Brier; veto v2. One controlled change vs exp-0018: calibration
+# method platt -> intercept (same pipeline as exp-0019, which was judged under decision 15).
+decision_metric: slope
+calibration:
+  method: intercept
+model:
+  kind: logistic
+  params:
+    C: 1.0
+    class_weight: balanced
+    max_iter: 2000

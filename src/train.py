@@ -120,24 +120,31 @@ def _fit_predict(exp: dict, train: pd.DataFrame, label: str, *scored: pd.DataFra
 
 
 def _calibrate(exp: dict, panel: pd.DataFrame, label: str, origin: int, p_raw: np.ndarray,
-               train_first: int) -> tuple[np.ndarray, dict, pd.DataFrame]:
+               train_first: int, deployed) -> tuple[np.ndarray, dict, pd.DataFrame]:
     """Calibrated validation probabilities, a record of the calibration fit, and the calibrated
     out-of-sample scores of calibration half B (for conformal prediction).
 
     The calibrator learns from the inner model's (seasons <= origin - 2) out-of-time scores on half
-    A of the calibration season and is applied to the deployed model's raw validation scores.
+    A of the calibration season and is applied to the deployed model's raw validation scores. With
+    `fit_on: deployed` it learns from the deployed model's own (in-sample) scores of the same rows.
     """
     cs = splits.calibration_split(panel, exp["data"], origin, label)
     inner = panel.iloc[cs.inner_idx]
     inner = inner[inner["season"] >= train_first]
     half_a, half_b = panel.iloc[cs.calib_a_idx], panel.iloc[cs.calib_b_idx]
-    score_a, score_b = _fit_predict(exp, inner, label, half_a, half_b)
+    if exp["calibration"].get("fit_on", "inner") == "deployed":
+        model, categories = deployed
+        score_a, score_b = (predict_risk(model, prepare_X(df, exp["numeric"], exp["categorical"], categories))
+                            for df in (half_a, half_b))
+    else:
+        score_a, score_b = _fit_predict(exp, inner, label, half_a, half_b)
     calibrator = build_calibrator(exp["calibration"]["method"]).fit(score_a, half_a[label].to_numpy())
     record = {
         "split": cs.name, "calibration_season": cs.calibration_season,
         "inner_cutoff_t": str(cs.inner_cutoff_t.date()), "calibration_cutoff_t": str(cs.calibration_cutoff_t.date()),
         "inner_rows": len(inner), "half_a_rows": len(half_a), "half_b_rows": len(half_b),
-        "half_a_positives": int(half_a[label].sum()), **calibrator.describe(),
+        "half_a_positives": int(half_a[label].sum()), "fit_on": exp["calibration"].get("fit_on", "inner"),
+        **calibrator.describe(),
     }
     conformal = half_b[KEEP_COLUMNS].assign(label=label, origin=origin, y=half_b[label].astype(int).to_numpy(),
                                             p=calibrator.transform(score_b))
@@ -161,7 +168,8 @@ def _train_classification(exp: dict, panel: pd.DataFrame) -> tuple[list, list, d
             p_raw = predict_risk(model, prepare_X(ev, numeric, categorical, categories))
             p = p_raw
             if exp.get("calibration"):
-                p, record, half_b = _calibrate(exp, panel, label, split.eval_season, p_raw, train_first)
+                p, record, half_b = _calibrate(exp, panel, label, split.eval_season, p_raw, train_first,
+                                               (model, categories))
                 calibration[split.name] = record
                 conformal.append(half_b)
             predictions.append(ev[KEEP_COLUMNS].assign(label=label, origin=split.eval_season,
