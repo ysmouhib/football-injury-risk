@@ -516,8 +516,9 @@ def seasons(result: dict, cfg: dict) -> None:
         yp = ypos[cfg["seasons"].index(s)]
         axes[-1].annotate("COVID-19", (1, yp), xycoords=("axes fraction", "data"), xytext=(-2, 0),
                           textcoords="offset points", ha="right", va="center", fontsize=7, color=MUTED)
-    axes[0].legend(loc="lower right", fontsize=7)
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="lower center", ncol=len(labels), fontsize=7.5)
     fig.suptitle("Champion pipeline refitted per development season (validation players; 95% CI)",
                  x=0.01, ha="left", color=INK)
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0.05, 1, 1))
     _save(fig, f"{cfg['id']}_seasons")
