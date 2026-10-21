@@ -607,8 +607,7 @@ def _risk_groups_report(r: dict) -> str:
             lines.append(f"| {g['group']} | {g['n']:,} | {g['injuries']} | {g['mean_predicted']:.4f} "
                          f"| {g['injury_rate']:.4f} {_ci(g['injury_rate_ci'])} |")
         lines.append("")
-    return "
-".join(lines)
+    return "\n".join(lines)
 
 
 # --- dispatch ---------------------------------------------------------------------------
