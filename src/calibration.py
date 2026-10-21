@@ -38,9 +38,29 @@ class IsotonicCalibrator:
         return {"method": "isotonic", "steps": int(len(self.iso.X_thresholds_))}
 
 
+class InterceptCalibrator:
+    """p -> sigmoid(a + logit(p)): calibration-in-the-large only (slope fixed at 1).
+
+    Balanced class weights shift a logistic model's intercept and leave its slopes consistent,
+    so the weighting distortion is removed by an intercept shift alone.
+    """
+
+    def fit(self, p: np.ndarray, y: np.ndarray) -> "InterceptCalibrator":
+        (self.a,) = _newton_logistic(np.ones((len(p), 1)), np.asarray(y, dtype=float), np.ones(len(p)), _logit(p))
+        return self
+
+    def transform(self, p: np.ndarray) -> np.ndarray:
+        return 1 / (1 + np.exp(-(self.a + _logit(p))))
+
+    def describe(self) -> dict:
+        return {"method": "intercept", "a": float(self.a), "b": 1.0}
+
+
 def build_calibrator(method: str):
     if method == "platt":
         return PlattCalibrator()
+    if method == "intercept":
+        return InterceptCalibrator()
     if method == "isotonic":
         return IsotonicCalibrator()
     raise ValueError(f"unknown calibration method: {method}")

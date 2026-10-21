@@ -1,0 +1,23 @@
+id: exp-0019
+title: Champion with intercept-only calibration
+stage: 4
+hypothesis: >-
+  Recalibrating the champion's class-weighted scores by an intercept shift only
+  (slope fixed at 1) lowers the validation Brier score at both horizons compared
+  with the full Platt map, whose slope carries one season's drift.
+champion: exp-0018
+data_config: configs/data.yaml
+features: v0+history+context
+labels: [y7, y28]
+seed: 20261020
+# Calibration-layer loop (PLAN A10b, open decision 15): decided on the Brier score with a
+# PR-AUC guard; one controlled change vs exp-0018: calibration method platt -> intercept.
+decision_metric: brier
+calibration:
+  method: intercept
+model:
+  kind: logistic
+  params:
+    C: 1.0
+    class_weight: balanced
+    max_iter: 2000

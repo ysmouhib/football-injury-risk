@@ -116,3 +116,16 @@ def test_verdict_guard_blocks_promotion():
     ok = {"cond1_delta_positive": True, "cond2_ci_excludes_zero": True, "cond3_no_slope_regression": True}
     assert verdict_from({"a": {**ok, "guard_pr_auc_not_worse": False}}) == "REJECT"
     assert verdict_from({"a": {**ok, "guard_pr_auc_not_worse": True}}) == "PROMOTE"
+
+
+def test_intercept_calibrator_shifts_only_the_intercept():
+    from src.calibration import build_calibrator
+
+    rng = np.random.default_rng(3)
+    p = rng.uniform(0.2, 0.8, 100_000)
+    true = 1 / (1 + np.exp(-(-2.5 + np.log(p / (1 - p)))))
+    y = (rng.random(len(p)) < true).astype(int)
+    cal = build_calibrator("intercept").fit(p, y)
+    assert cal.a == pytest.approx(-2.5, abs=0.05) and cal.describe()["b"] == 1.0
+    q = cal.transform(p)
+    assert np.all(np.diff(q[np.argsort(p)]) >= 0)  # strictly rank-preserving map
