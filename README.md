@@ -6,6 +6,8 @@ records and tested on a full season it had never seen.**
 It needs no GPS, no wellness questionnaires and no medical files: only injury history, appearances
 and basic player details that anyone can look up. It is a research project, not medical advice.
 
+This is the weekly half of a two-part system. The match-day half, [Football-live-injury-risk](https://github.com/ysmouhib/Football-live-injury-risk), starts from this model's risk at kick-off.
+
 ## The result in one picture
 
 ![Injury rate by predicted-risk group, 2024/25](results/figures/exp-0030_risk_groups.png)
